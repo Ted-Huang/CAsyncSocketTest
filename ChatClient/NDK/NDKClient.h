@@ -36,6 +36,7 @@
 #include <afxsock.h>
 #include "NDKDefines.h"
 
+#include "AOISocketFile.h"
 ////////////////////////////////////////////////////////////////////////////////
 // Forward declarations                                                       //
 ////////////////////////////////////////////////////////////////////////////////
@@ -170,7 +171,7 @@ private:
 	
 private:
 	CNDKClientSocket* m_pClientSocket;
-	CSocketFile*	  m_pFile;
+	CAOISocketFile*	  m_pFile;
 	CArchive*		  m_pArchiveIn;
 	CArchive*		  m_pArchiveOut;
 };

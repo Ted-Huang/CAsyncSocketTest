@@ -135,6 +135,7 @@
   <ItemGroup>
     <ClCompile Include="ChatClient.cpp" />
     <ClCompile Include="ChatClientDlg.cpp" />
+    <ClCompile Include="NDK\AOISocketFile.cpp" />
     <ClCompile Include="NDK\NDKClient.cpp" />
     <ClCompile Include="NDK\NDKClientSocket.cpp" />
     <ClCompile Include="NDK\NDKDataBuffer.cpp" />
@@ -154,6 +155,7 @@
     <ClInclude Include="ChatClient.h" />
     <ClInclude Include="ChatClientDlg.h" />
     <ClInclude Include="ChatMessage.h" />
+    <ClInclude Include="NDK\AOISocketFile.h" />
     <ClInclude Include="NDK\NDKClient.h" />
     <ClInclude Include="NDK\NDKClientSocket.h" />
     <ClInclude Include="NDK\NDKDataBuffer.h" />

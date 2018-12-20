@@ -38,6 +38,9 @@
 #include "NDKMessage.h"
 
 
+static const long m_sendLength = 1024000;
+static const long m_receiveLength = 1024000;
+
 ////////////////////////////////////////////////////////////////////////////////
 // Constructor / Destructor                                                   //
 ////////////////////////////////////////////////////////////////////////////////
@@ -110,7 +113,38 @@ BOOL CNDKClient::OpenConnection(const CString& strServerIp, long lPort)
 		if ((m_pClientSocket != NULL) && m_pClientSocket->Create() && 
 			m_pClientSocket->Connect(strServerIp, lPort))
 		{
-			m_pFile = new CSocketFile(m_pClientSocket);
+			// added by danny at 20101108
+			//int bNodelay = 1;
+			//m_pClientSocket->SetSockOpt(TCP_NODELAY, &bNodelay, sizeof(int), IPPROTO_TCP);
+
+			// --------------------------------------------------------------------------------- added by danny
+			long sendBufferLength=0;
+			long receiveBufferLength=0;
+			int   optionLen=4;
+
+			BOOL goodSock = m_pClientSocket->GetSockOpt(SO_RCVBUF,&receiveBufferLength,&optionLen,SOL_SOCKET);
+			if(goodSock)
+			{
+				if(receiveBufferLength < m_receiveLength)
+				{
+					goodSock = m_pClientSocket->SetSockOpt(SO_RCVBUF,&m_receiveLength,optionLen,SOL_SOCKET);
+
+				}
+			}
+
+			goodSock = m_pClientSocket->GetSockOpt(SO_SNDBUF,&sendBufferLength,&optionLen,SOL_SOCKET);
+			if(goodSock)
+			{
+				if(sendBufferLength < m_sendLength)
+				{
+					goodSock = m_pClientSocket->SetSockOpt(SO_SNDBUF,&m_sendLength,optionLen,SOL_SOCKET);
+
+				}
+			} 
+			// --------------------------------------------------------------------------------------
+
+
+			m_pFile = new CAOISocketFile(m_pClientSocket, TRUE);
 
 			if (m_pFile != NULL)
 			{

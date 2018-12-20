@@ -47,6 +47,9 @@
     <ClCompile Include="NDK\NDKMessageData.cpp">
       <Filter>NDK Sources Files</Filter>
     </ClCompile>
+    <ClCompile Include="NDK\AOISocketFile.cpp">
+      <Filter>NDK Sources Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ChatClient.rc">
@@ -86,6 +89,9 @@
     </ClInclude>
     <ClInclude Include="NDK\NDKMessageData.h">
       <Filter>NDK Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NDK\AOISocketFile.h">
+      <Filter>NDK Sources Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
