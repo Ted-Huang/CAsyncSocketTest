@@ -62,10 +62,24 @@ CNDKClientSocket::~CNDKClientSocket()
 // Called when data is received.
 void CNDKClientSocket::OnReceive(int nErrorCode) 
 {
+	// With Visual C++ 2003, this patch is needed because for an unknown reason socket notifications are not send
+	//VERIFY(AsyncSelect(/*FD_READ |*/ FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE));
+	VERIFY(AsyncSelect(FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE));	// modified by danny, important for speed up
+
 	CSocket::OnReceive(nErrorCode);
 
 	ASSERT(m_pClient != NULL);
 
 	if (m_pClient != NULL)
-		m_pClient->ProcessPendingRead(nErrorCode);
+	{
+		if (m_pClient->ProcessPendingRead(nErrorCode))
+		{
+			CString strSocketAddress;
+			UINT    unPort = 0;
+
+			// Restore to the default notification
+			if (GetSockName(strSocketAddress, unPort) != 0)
+				VERIFY(AsyncSelect());
+		}
+	}
 }

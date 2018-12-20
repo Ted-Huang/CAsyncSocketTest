@@ -289,7 +289,8 @@ void CChatClientDlg::OnButtonConnect()
 				CNDKMessage message(DM_CONNECT);
 				NDK_SYSTEM_INFO m_systemInfo;
 				memset(&m_systemInfo, 0, sizeof(NDK_SYSTEM_INFO));
-				m_systemInfo.machineId = 100;
+				m_systemInfo.machineId = 0;
+				m_systemInfo.cameraNumber = 2;
 				message.Add((USHORT)(m_systemInfo.machineId));	// client machine id
 				message.Add((UINT)sizeof(NDK_SYSTEM_INFO));
 				message.Add(&m_systemInfo, sizeof(NDK_SYSTEM_INFO));

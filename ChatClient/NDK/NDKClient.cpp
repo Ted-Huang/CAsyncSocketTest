@@ -244,8 +244,9 @@ void CNDKClient::OnPing(long lNbMilliseconds)
 // Processes pending read. If a problem occurs, the connection will
 // be closed and OnDisconnect callback will be called with the value 
 // NDKErrorReceivingMessage.
-void CNDKClient::ProcessPendingRead(long lErrorCode)
+BOOL CNDKClient::ProcessPendingRead(long lErrorCode)
 {
+	BOOL bIsConnectionOpened = TRUE;
 	CNDKMessage message;
 
 	if (lErrorCode == 0)
@@ -265,6 +266,7 @@ void CNDKClient::ProcessPendingRead(long lErrorCode)
 
 				// Close the connection when an error occured
 				CloseConnection(NDKClient_ErrorReceivingMessage);
+				bIsConnectionOpened = FALSE;
 			}
 			END_CATCH
 
@@ -276,7 +278,9 @@ void CNDKClient::ProcessPendingRead(long lErrorCode)
 			m_pArchiveOut->Abort();
 
 		CloseConnection(NDKClient_ErrorReceivingMessage);
+		bIsConnectionOpened = FALSE;
 	}
+	return bIsConnectionOpened;
 }
 
 

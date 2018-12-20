@@ -144,7 +144,7 @@ private:
 	// Processes pending read. If a problem occurs, the connection will
 	// be closed and OnDisconnect callback will be called with the value 
 	// NDKErrorReceivingMessage.
-	void ProcessPendingRead(long lErrorCode);
+	BOOL ProcessPendingRead(long lErrorCode);
 
 	// Translates message and does the appropriate task for message handled by
 	// the NDK.
