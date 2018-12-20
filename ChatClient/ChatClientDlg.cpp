@@ -201,43 +201,45 @@ void CChatClientDlg::OnMessage(CNDKMessage& message)
 {
 	switch (message.GetId())
 	{
-	case ChatUserJoin:
-		{
-			CString strNickname;
-
-			message.GetAt(0, strNickname);
-
-			CString strUserJoin;
-			strUserJoin.Format(IDS_USER_JOIN, strNickname);
-			
-			AddSystemText(strUserJoin);
-		}
+	default:
 		break;
+	//case ChatUserJoin:
+	//	{
+	//		CString strNickname;
 
-	case ChatText:
-		{
-			CString strNickname;
-			CString strText;
+	//		message.GetAt(0, strNickname);
 
-			message.GetAt(0, strNickname);
-			message.GetAt(1, strText);
+	//		CString strUserJoin;
+	//		strUserJoin.Format(IDS_USER_JOIN, strNickname);
+	//		
+	//		AddSystemText(strUserJoin);
+	//	}
+	//	break;
 
-			AddText(strNickname + _T(": ") + strText);
-		}
-		break;
+	//case ChatText:
+	//	{
+	//		CString strNickname;
+	//		CString strText;
 
-	case ChatUserQuit:
-		{
-			CString strNickname;
+	//		message.GetAt(0, strNickname);
+	//		message.GetAt(1, strText);
 
-			message.GetAt(0, strNickname);
+	//		AddText(strNickname + _T(": ") + strText);
+	//	}
+	//	break;
 
-			CString strUserQuit;
-			strUserQuit.Format(IDS_USER_QUIT, strNickname);
-			
-			AddSystemText(strUserQuit);
-		}
-		break;
+	//case ChatUserQuit:
+	//	{
+	//		CString strNickname;
+
+	//		message.GetAt(0, strNickname);
+
+	//		CString strUserQuit;
+	//		strUserQuit.Format(IDS_USER_QUIT, strNickname);
+	//		
+	//		AddSystemText(strUserQuit);
+	//	}
+	//	break;
 	}
 }
 
@@ -289,6 +291,23 @@ void CChatClientDlg::OnPing(long lNbMilliseconds)
 
 	AddSystemText(strPing);
 }
+typedef struct _NDK_SYSTEM_INFO_ {
+	DWORD	machineId;		// Zero based.
+	DWORD	machineGroup;
+	DWORD	machineJob;
+	DWORD	flag;
+	INT64	aoi_ver;
+	INT64	aoi_rev;
+	wchar_t	serverAddress[16];	// Beagle 20120503 added.
+	wchar_t slaveAddress[17]; //eric chao 20140620
+	DWORD	cameraNumber;	//	added by eric at 20121115
+	DWORD	ewfInfo; //eric chao 20130204
+	double  CamRadio; //eric chao 20160120
+	int		nNDisplayUnit; //seanchen 20130828-4
+	int		defectGroupTypeIndex;	// added by eric at 20150310
+	BOOL bAreaCamera;
+} NDK_SYSTEM_INFO;
+
 
 void CChatClientDlg::OnButtonConnect() 
 {
@@ -303,10 +322,14 @@ void CChatClientDlg::OnButtonConnect()
 			if (OpenConnection(m_strIp, m_lPort))
 			{
 				AddSystemText((LPCSTR)IDS_CONNECTED);
+				CNDKMessage message(0);
+				NDK_SYSTEM_INFO m_systemInfo;
+				memset(&m_systemInfo, 0, sizeof(NDK_SYSTEM_INFO));
 
-				CNDKMessage message(ChatUserJoin);
-				message.Add(m_strNickname);
-
+				m_systemInfo.cameraNumber = 2;
+				message.Add((USHORT)(m_systemInfo.machineId));	// client machine id
+				message.Add((UINT)sizeof(NDK_SYSTEM_INFO));
+				message.Add(&m_systemInfo, sizeof(NDK_SYSTEM_INFO));
 				SendMessageToServer(message);
 			}
 			else
@@ -330,43 +353,43 @@ void CChatClientDlg::OnButtonSend()
 {
 	if (UpdateData(TRUE))
 	{
-		CNDKMessage message(ChatText);
-		message.Add(m_strChatInput);
+		//CNDKMessage message(ChatText);
+		//message.Add(m_strChatInput);
 
-		SendMessageToServer(message);
+		//SendMessageToServer(message);
 
-		AddText(m_strChatInput);
+		//AddText(m_strChatInput);
 
-		m_strChatInput.Empty();
-		UpdateData(FALSE);
+		//m_strChatInput.Empty();
+		//UpdateData(FALSE);
 	}
 }
 
 void CChatClientDlg::OnButtonSendBigMessage() 
 {
-	CNDKMessage message(ChatBigMessage);
-		
-	char szBigMessage[] = ("The big message contains all C++ basic types.");
-	message.Add(szBigMessage, sizeof(szBigMessage));
+	//CNDKMessage message(ChatBigMessage);
+	//	
+	//char szBigMessage[] = ("The big message contains all C++ basic types.");
+	//message.Add(szBigMessage, sizeof(szBigMessage));
 
-	message.Add((UCHAR)_T('a'));
-	message.Add((char)_T('b'));
-	message.Add((USHORT) 1);
-	message.Add((short)-2);
-	message.Add((UINT)3);
-	message.Add((int)-4);
-	message.Add((ULONG)5);
-	message.Add((long)-6);
-	message.Add((float)123.456f);
-	message.Add((double)-789.654f);
+	//message.Add((UCHAR)_T('a'));
+	//message.Add((char)_T('b'));
+	//message.Add((USHORT) 1);
+	//message.Add((short)-2);
+	//message.Add((UINT)3);
+	//message.Add((int)-4);
+	//message.Add((ULONG)5);
+	//message.Add((long)-6);
+	//message.Add((float)123.456f);
+	//message.Add((double)-789.654f);
 
-	double dValues[10000];
-	dValues[5555] = 1234.56789f;
-	message.Add(dValues, sizeof(dValues));
+	//double dValues[10000];
+	//dValues[5555] = 1234.56789f;
+	//message.Add(dValues, sizeof(dValues));
 
-	message.Add(CString(_T("End of the big message")));
+	//message.Add(CString(_T("End of the big message")));
 
-	SendMessageToServer(message);
+	//SendMessageToServer(message);
 }
 
 void CChatClientDlg::UpdateUI()

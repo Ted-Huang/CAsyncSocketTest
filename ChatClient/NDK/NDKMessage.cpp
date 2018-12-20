@@ -466,40 +466,43 @@ void CNDKMessage::GetNext(LPVOID pData, UINT unLength)
 
 
 // Serializes a CNDKMessage object to a CArchive
-IMPLEMENT_SERIAL(CNDKMessage, CObject, 1)
+IMPLEMENT_SERIAL(CNDKMessage, CObject, VERSIONABLE_SCHEMA | 1)
 void CNDKMessage::Serialize(CArchive& archive)
 {	
-	if (archive.IsStoring())
-	{
-		archive << m_lId;
+		archive.SerializeClass(RUNTIME_CLASS(CNDKMessage));
+	
+		if (archive.IsStoring())
+		{
+			archive << m_lId;
 		archive << m_elements.GetSize();
 
-		for (int nIndex = 0; nIndex < m_elements.GetSize(); nIndex++)
-			m_elements.GetAt(nIndex).Serialize(archive);
-	}
-	else
-	{
-		int nNbElements = 0;
-
-		archive >> m_lId;
-		archive >> nNbElements;
-
-		if (nNbElements > 0)
-		{
-			m_elements.SetSize(nNbElements);
-
-			for (int nIndex = 0; nIndex < nNbElements; nIndex++)
-			{
-				CNDKMessageData	messageData;
-
-				messageData.Serialize(archive);
-			
-				m_elements.SetAt(nIndex, messageData);
-			}
+			for (int nIndex = 0; nIndex < m_elements.GetSize(); nIndex++)
+				m_elements.GetAt(nIndex).Serialize(archive);
 		}
-	}
+		else
+		{
+				int nNbElements = 0;
 
-	ResetCurrentIndex();
+				archive >> m_lId;
+				archive >> nNbElements;
+
+				if (nNbElements > 0)
+				{
+					m_elements.SetSize(nNbElements);
+
+					for (int nIndex = 0; nIndex < nNbElements; nIndex++)
+					{
+						CNDKMessageData	messageData;
+
+						messageData.Serialize(archive);
+					
+						m_elements.SetAt(nIndex, messageData);
+					}
+				}
+			}
+
+		ResetCurrentIndex();
+	
 }
 
 
