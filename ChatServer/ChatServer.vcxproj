@@ -146,6 +146,7 @@
   <ItemGroup>
     <ClCompile Include="ChatServer.cpp" />
     <ClCompile Include="ChatServerDlg.cpp" />
+    <ClCompile Include="D:\AOI_Code\AOI_NEWUI_0518\master\AOI\NDK\AOISocketFile.cpp" />
     <ClCompile Include="NDK\NDKDataBuffer.cpp" />
     <ClCompile Include="NDK\NDKMessage.cpp" />
     <ClCompile Include="NDK\NDKMessageData.cpp" />
@@ -167,6 +168,7 @@
     <ClInclude Include="ChatMessage.h" />
     <ClInclude Include="ChatServer.h" />
     <ClInclude Include="ChatServerDlg.h" />
+    <ClInclude Include="D:\AOI_Code\AOI_NEWUI_0518\master\AOI\NDK\AOISocketFile.h" />
     <ClInclude Include="NDK\NDKDataBuffer.h" />
     <ClInclude Include="NDK\NDKDefines.h" />
     <ClInclude Include="NDK\NDKMessage.h" />

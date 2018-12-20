@@ -97,7 +97,7 @@ BOOL CNDKServerSocket::Initialize()
 {
 	BOOL bResult = FALSE;
 
-	m_pFile = new CSocketFile(this);
+	m_pFile = new CAOISocketFile(this);
 
 	if (m_pFile != NULL)
 	{

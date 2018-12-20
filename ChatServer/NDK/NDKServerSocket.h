@@ -34,7 +34,7 @@
 #pragma once
 #include <afxsock.h>
 #include "NDKMessage.h"
-
+#include "AOISocketFile.h"
 ////////////////////////////////////////////////////////////////////////////////
 // Forward declarations                                                       //
 ////////////////////////////////////////////////////////////////////////////////
@@ -121,7 +121,7 @@ private:
 
 private:
 	CNDKServer*  m_pServer;
-	CSocketFile* m_pFile;
+	CAOISocketFile* m_pFile;
 	CArchive*    m_pArchiveIn;
 	CArchive*    m_pArchiveOut;
 };

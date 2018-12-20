@@ -53,6 +53,9 @@
     <ClCompile Include="NDK\NDKUserManager.cpp">
       <Filter>NDK Sources Files</Filter>
     </ClCompile>
+    <ClCompile Include="D:\AOI_Code\AOI_NEWUI_0518\master\AOI\NDK\AOISocketFile.cpp">
+      <Filter>NDK Sources Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ChatServer.rc">
@@ -98,6 +101,9 @@
     </ClInclude>
     <ClInclude Include="NDK\NDKUserManager.h">
       <Filter>NDK Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\AOI_Code\AOI_NEWUI_0518\master\AOI\NDK\AOISocketFile.h">
+      <Filter>NDK Sources Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
