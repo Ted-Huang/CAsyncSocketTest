@@ -273,28 +273,20 @@ void CChatClientDlg::OnButtonSend()
 {
 	if (UpdateData(TRUE))
 	{
-		if (IsConnected())
+		if (!IsConnected())
 		{
-			CloseConnection();
+			OpenConnection(m_strIp, m_lPort);
 		}
-		else
-		{
-			if (OpenConnection(m_strIp, m_lPort))
-			{
-				CString strType, strIndex;
-				m_editType.GetWindowText(strType);
-				m_editChatInput.GetWindowText(strIndex);
-				CNDKMessage message(234);
-				message.Add(_ttoi(strType));
-				message.Add(_ttoi(strIndex));
+	
+		CString strType, strIndex;
+		m_editType.GetWindowText(strType);
+		m_editChatInput.GetWindowText(strIndex);
+		CNDKMessage message(233);
+		message.Add(_ttoi(strType));
+		message.Add(_ttoi(strIndex));
 
-				SendMessageToServer(message);
-			}
-			else
-			{
-				AfxMessageBox(IDS_CANNOT_CONNECT, MB_ICONSTOP);
-			}
-		}
+		SendMessageToServer(message);
+			
 	}
 }
 
