@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{74554c24-03d9-45b5-abe3-67ffa09fab87}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{b94605e8-5a8a-4540-859b-4e5bf8bf0944}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{b7e73cf1-f542-4edd-a8af-e155c7b3d5a2}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="NDK Sources Files">
+      <UniqueIdentifier>{fbcbeee9-1663-4890-b316-25fdd6c48633}</UniqueIdentifier>
+      <Extensions>cpp</Extensions>
+    </Filter>
+    <Filter Include="NDK Header Files">
+      <UniqueIdentifier>{6cf4b2bd-6f02-427f-9998-01ce07916b01}</UniqueIdentifier>
+      <Extensions>h</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ChatServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ChatServerDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StdAfx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NDK\NDKDataBuffer.cpp">
+      <Filter>NDK Sources Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NDK\NDKMessage.cpp">
+      <Filter>NDK Sources Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NDK\NDKMessageData.cpp">
+      <Filter>NDK Sources Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NDK\NDKServer.cpp">
+      <Filter>NDK Sources Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NDK\NDKServerSocket.cpp">
+      <Filter>NDK Sources Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NDK\NDKUser.cpp">
+      <Filter>NDK Sources Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NDK\NDKUserManager.cpp">
+      <Filter>NDK Sources Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ChatServer.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ChatMessage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ChatServer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ChatServerDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NDK\NDKDataBuffer.h">
+      <Filter>NDK Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NDK\NDKDefines.h">
+      <Filter>NDK Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NDK\NDKMessage.h">
+      <Filter>NDK Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NDK\NDKMessageData.h">
+      <Filter>NDK Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NDK\NDKServer.h">
+      <Filter>NDK Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NDK\NDKServerSocket.h">
+      <Filter>NDK Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NDK\NDKUser.h">
+      <Filter>NDK Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NDK\NDKUserManager.h">
+      <Filter>NDK Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\ChatServer.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="res\ChatServer.rc2">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>
