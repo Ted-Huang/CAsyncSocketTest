@@ -28,6 +28,7 @@
 #define IDC_BUTTON_SEND_BIG_MESSAGE     1006
 #define IDC_BUTTON_CONNECT              1007
 #define IDC_EDIT_NICKNAME               1008
+#define IDC_EDIT_TYPE					1009
 
 // Next default values for new objects
 // 

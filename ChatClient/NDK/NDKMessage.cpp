@@ -466,7 +466,7 @@ void CNDKMessage::GetNext(LPVOID pData, UINT unLength)
 
 
 // Serializes a CNDKMessage object to a CArchive
-IMPLEMENT_SERIAL(CNDKMessage, CObject, VERSIONABLE_SCHEMA | 1)
+IMPLEMENT_SERIAL(CNDKMessage, CObject, 1)
 void CNDKMessage::Serialize(CArchive& archive)
 {	
 		archive.SerializeClass(RUNTIME_CLASS(CNDKMessage));

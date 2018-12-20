@@ -14,51 +14,6 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
-// CAboutDlg dialog used for App About
-
-class CAboutDlg : public CDialog
-{
-public:
-	CAboutDlg();
-
-// Dialog Data
-	//{{AFX_DATA(CAboutDlg)
-	enum { IDD = IDD_ABOUTBOX };
-	//}}AFX_DATA
-
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CAboutDlg)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
-
-// Implementation
-protected:
-	//{{AFX_MSG(CAboutDlg)
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
-};
-
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD)
-{
-	//{{AFX_DATA_INIT(CAboutDlg)
-	//}}AFX_DATA_INIT
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange* pDX)
-{
-	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CAboutDlg)
-	//}}AFX_DATA_MAP
-}
-
-BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
-	//{{AFX_MSG_MAP(CAboutDlg)
-		// No message handlers
-	//}}AFX_MSG_MAP
-END_MESSAGE_MAP()
-
-/////////////////////////////////////////////////////////////////////////////
 // CChatClientDlg dialog
 
 CChatClientDlg::CChatClientDlg(CWnd* pParent /*=NULL*/)
@@ -66,7 +21,7 @@ CChatClientDlg::CChatClientDlg(CWnd* pParent /*=NULL*/)
 {
 	//{{AFX_DATA_INIT(CChatClientDlg)
 	m_strIp = _T("127.0.0.1");
-	m_lPort = 6000;
+	m_lPort = 2323;
 	m_strChatInput = _T("");
 	m_strNickname = _T("");
 	//}}AFX_DATA_INIT
@@ -84,13 +39,13 @@ void CChatClientDlg::DoDataExchange(CDataExchange* pDX)
 	//{{AFX_DATA_MAP(CChatClientDlg)
 	DDX_Control(pDX, IDC_EDIT_CHAT_OUTPUT, m_editChatOutput);
 	DDX_Control(pDX, IDC_EDIT_CHAT_INPUT, m_editChatInput);
-	DDX_Control(pDX, IDC_BUTTON_SEND_BIG_MESSAGE, m_buttonSendBigMessage);
+	DDX_Control(pDX, IDC_EDIT_TYPE, m_editType);
+	
 	DDX_Control(pDX, IDC_BUTTON_SEND, m_buttonSend);
 	DDX_Control(pDX, IDC_BUTTON_PING_SERVER, m_buttonPingServer);
 	DDX_Control(pDX, IDC_BUTTON_CONNECT, m_buttonConnect);
 	DDX_Text(pDX, IDC_EDIT_IP, m_strIp);
 	DDX_Text(pDX, IDC_EDIT_PORT, m_lPort);
-	DDX_Text(pDX, IDC_EDIT_CHAT_INPUT, m_strChatInput);
 	DDX_Text(pDX, IDC_EDIT_NICKNAME, m_strNickname);
 	//}}AFX_DATA_MAP
 }
@@ -103,7 +58,6 @@ BEGIN_MESSAGE_MAP(CChatClientDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_CONNECT, OnButtonConnect)
 	ON_BN_CLICKED(IDC_BUTTON_PING_SERVER, OnButtonPingServer)
 	ON_BN_CLICKED(IDC_BUTTON_SEND, OnButtonSend)
-	ON_BN_CLICKED(IDC_BUTTON_SEND_BIG_MESSAGE, OnButtonSendBigMessage)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -147,8 +101,6 @@ void CChatClientDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
 	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
 	{
-		CAboutDlg dlgAbout;
-		dlgAbout.DoModal();
 	}
 	else
 	{
@@ -203,43 +155,6 @@ void CChatClientDlg::OnMessage(CNDKMessage& message)
 	{
 	default:
 		break;
-	//case ChatUserJoin:
-	//	{
-	//		CString strNickname;
-
-	//		message.GetAt(0, strNickname);
-
-	//		CString strUserJoin;
-	//		strUserJoin.Format(IDS_USER_JOIN, strNickname);
-	//		
-	//		AddSystemText(strUserJoin);
-	//	}
-	//	break;
-
-	//case ChatText:
-	//	{
-	//		CString strNickname;
-	//		CString strText;
-
-	//		message.GetAt(0, strNickname);
-	//		message.GetAt(1, strText);
-
-	//		AddText(strNickname + _T(": ") + strText);
-	//	}
-	//	break;
-
-	//case ChatUserQuit:
-	//	{
-	//		CString strNickname;
-
-	//		message.GetAt(0, strNickname);
-
-	//		CString strUserQuit;
-	//		strUserQuit.Format(IDS_USER_QUIT, strNickname);
-	//		
-	//		AddSystemText(strUserQuit);
-	//	}
-	//	break;
 	}
 }
 
@@ -291,6 +206,7 @@ void CChatClientDlg::OnPing(long lNbMilliseconds)
 
 	AddSystemText(strPing);
 }
+
 typedef struct _NDK_SYSTEM_INFO_ {
 	DWORD	machineId;		// Zero based.
 	DWORD	machineGroup;
@@ -331,6 +247,10 @@ void CChatClientDlg::OnButtonConnect()
 				message.Add((UINT)sizeof(NDK_SYSTEM_INFO));
 				message.Add(&m_systemInfo, sizeof(NDK_SYSTEM_INFO));
 				SendMessageToServer(message);
+				//CNDKMessage message(234);
+				//message.Add(123);	// client machine id
+				//message.Add(456);
+				//SendMessageToServer(message);
 			}
 			else
 			{
@@ -353,44 +273,31 @@ void CChatClientDlg::OnButtonSend()
 {
 	if (UpdateData(TRUE))
 	{
-		//CNDKMessage message(ChatText);
-		//message.Add(m_strChatInput);
+		if (IsConnected())
+		{
+			CloseConnection();
+		}
+		else
+		{
+			if (OpenConnection(m_strIp, m_lPort))
+			{
+				CString strType, strIndex;
+				m_editType.GetWindowText(strType);
+				m_editChatInput.GetWindowText(strIndex);
+				CNDKMessage message(234);
+				message.Add(_ttoi(strType));
+				message.Add(_ttoi(strIndex));
 
-		//SendMessageToServer(message);
-
-		//AddText(m_strChatInput);
-
-		//m_strChatInput.Empty();
-		//UpdateData(FALSE);
+				SendMessageToServer(message);
+			}
+			else
+			{
+				AfxMessageBox(IDS_CANNOT_CONNECT, MB_ICONSTOP);
+			}
+		}
 	}
 }
 
-void CChatClientDlg::OnButtonSendBigMessage() 
-{
-	//CNDKMessage message(ChatBigMessage);
-	//	
-	//char szBigMessage[] = ("The big message contains all C++ basic types.");
-	//message.Add(szBigMessage, sizeof(szBigMessage));
-
-	//message.Add((UCHAR)_T('a'));
-	//message.Add((char)_T('b'));
-	//message.Add((USHORT) 1);
-	//message.Add((short)-2);
-	//message.Add((UINT)3);
-	//message.Add((int)-4);
-	//message.Add((ULONG)5);
-	//message.Add((long)-6);
-	//message.Add((float)123.456f);
-	//message.Add((double)-789.654f);
-
-	//double dValues[10000];
-	//dValues[5555] = 1234.56789f;
-	//message.Add(dValues, sizeof(dValues));
-
-	//message.Add(CString(_T("End of the big message")));
-
-	//SendMessageToServer(message);
-}
 
 void CChatClientDlg::UpdateUI()
 {
@@ -401,12 +308,11 @@ void CChatClientDlg::UpdateUI()
 	else
 		m_buttonConnect.SetWindowText(_T("&Connect"));
 		
-	m_buttonSendBigMessage.EnableWindow(bEnable);
 	m_buttonPingServer.EnableWindow(bEnable);
-	m_buttonSend.EnableWindow(bEnable);
-
+	//m_buttonSend.EnableWindow(bEnable);
+/*
 	m_editChatOutput.EnableWindow(bEnable);
-	m_editChatInput.EnableWindow(bEnable);
+	m_editChatInput.EnableWindow(bEnable);*/
 }
 
 void CChatClientDlg::AddText(const CString& strText)

@@ -25,7 +25,7 @@ public:
 	enum { IDD = IDD_CHATCLIENT_DIALOG };
 	CEdit	m_editChatOutput;
 	CEdit	m_editChatInput;
-	CButton	m_buttonSendBigMessage;
+	CEdit	m_editType;
 	CButton	m_buttonSend;
 	CButton	m_buttonPingServer;
 	CButton	m_buttonConnect;
@@ -70,7 +70,6 @@ protected:
 	afx_msg void OnButtonConnect();
 	afx_msg void OnButtonPingServer();
 	afx_msg void OnButtonSend();
-	afx_msg void OnButtonSendBigMessage();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 
