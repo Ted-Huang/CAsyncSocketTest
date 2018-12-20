@@ -248,3 +248,6 @@ DASRC/exe/daYQ.dll
 DASRC/exe/cadll/cacsc.dll
 DASRC/DaInstaller/DaqCSC/*.exe
 DASRC/VersionCount.txt
+*.opensdf
+*.suo
+*.aps
