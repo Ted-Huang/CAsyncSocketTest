@@ -205,98 +205,51 @@ void CChatServerDlg::OnConnect(long /*lUserId*/)
 {
 	// OnMessage: ChatUserJoin adds the user in the map, so nothing to do here
 }
-
+typedef struct _NDK_SYSTEM_INFO_ {
+	DWORD	machineId;		// Zero based.
+	DWORD	machineGroup;
+	DWORD	machineJob;
+	DWORD	flag;
+	INT64	aoi_ver;
+	INT64	aoi_rev;
+	wchar_t	serverAddress[16];	// Beagle 20120503 added.
+	wchar_t slaveAddress[17]; //eric chao 20140620
+	DWORD	cameraNumber;	//	added by eric at 20121115
+	DWORD	ewfInfo; //eric chao 20130204
+	double  CamRadio; //eric chao 20160120
+	int		nNDisplayUnit; //seanchen 20130828-4
+	int		defectGroupTypeIndex;	// added by eric at 20150310
+	BOOL bAreaCamera;
+} NDK_SYSTEM_INFO;
 // Called whenever a message is received from a user. The derived class must 
 // override this method.
 void CChatServerDlg::OnMessage(long lUserId, CNDKMessage& message)
 {
 	switch (message.GetId())
 	{
-	case ChatUserJoin:
-		{
-			CString strNickname;
-			message.GetAt(0, strNickname);
-
-			AddUser(lUserId, strNickname);
-
-			CString strUserJoin;
-			strUserJoin.Format(IDS_USER_JOIN, strNickname);
-						
-			AddSystemText(strUserJoin);
-
-			SendMessageToAllUsersExceptFor(lUserId, message);
-		}
-		break;
-
-	case ChatText:
-		{
-			CString strNickname;
-			m_mapIdsNicknames.Lookup(lUserId, strNickname);
-
-			CString strText;
-			message.GetAt(0, strText);
-
-			AddText(strNickname + _T(": ") + strText);
-
-			message.SetAt(0, strNickname);
-			message.SetAt(1, strText);
-
-			// Send the text to all other users
-			SendMessageToAllUsersExceptFor(lUserId, message);
-		}
-		break;
-
-	case ChatBigMessage:
-		{		
-			char szBigMessage[300];
-			message.GetAt(0, szBigMessage, sizeof(szBigMessage));
-
-			UCHAR uc;
-			message.GetAt(1, uc);
-
-			char c;
-			message.GetAt(2, c);
-
-			USHORT us;
-			message.GetAt(3, us);
-
-			short s;
-			message.GetAt(4, s);
-
-			UINT un;
-			message.GetAt(5, un);
-
-			int n;
-			message.GetAt(6, n);
-
-			ULONG ul;
-			message.GetAt(7, ul);
-
-			long l;
-			message.GetAt(8, l);
-
-			float f;
-			message.GetAt(9, f);
-
-			double d;
-			message.GetAt(10, d);
-
-			double dValues[10000];
-			message.GetAt(11, dValues, sizeof(dValues));
-
-			ASSERT(dValues[5555] == 1234.56789f);
-
-			CString strEndMessage;
-			message.GetAt(12, strEndMessage);
-
-			CString strNickname;
-			m_mapIdsNicknames.Lookup(lUserId, strNickname);
-
-			CString strBigMessage;
-			strBigMessage.Format(IDS_BIG_MESSAGE, strNickname);
-			
-			AddSystemText(strBigMessage);
-		}
+	case DM_CONNECT:
+	{
+		USHORT	mtype;
+		UINT	mlen_sysinfo;
+		unsigned char	*mbuffer;
+		NDK_SYSTEM_INFO	*SysInfo = new NDK_SYSTEM_INFO;
+#if 1 //For Master Debug
+		CString tShowLog;
+		tShowLog.Format(_T("Client(%d) Connect!"), lUserId);
+#endif //For Master Debug
+		message.GetNext(mtype);
+		// Beagle 20110711
+		// We must protect GetNext from memory overflow. NDK won't do this check for you.
+		message.GetNext(mlen_sysinfo);
+		mbuffer = (unsigned char *)malloc(mlen_sysinfo);
+		memset(mbuffer, 0, mlen_sysinfo);
+		message.GetNext(mbuffer, mlen_sysinfo);	// Check for overflow.
+		memcpy(SysInfo, mbuffer, mlen_sysinfo);
+		free(mbuffer);
+#if 1 //For Master Debug
+#endif //For Master Debug
+		//memcpy(m_clientSystemInfo + SysInfo->machineId, SysInfo, sizeof(NDK_SYSTEM_INFO));	// Beagle 20120306 added. //seanchen 20140710 use SysInfo before delete
+	}
 		break;
 	}
 }
@@ -309,45 +262,45 @@ void CChatServerDlg::OnMessage(long lUserId, CNDKMessage& message)
 // must override this method.
 void CChatServerDlg::OnDisconnect(long lUserId, NDKServerDisconnection disconnectionType)
 {
-	CString strNickname;
-	m_mapIdsNicknames.Lookup(lUserId, strNickname);
+	//CString strNickname;
+	//m_mapIdsNicknames.Lookup(lUserId, strNickname);
 
-	CNDKMessage message(ChatUserQuit);
-	message.Add(strNickname);
+	//CNDKMessage message(ChatUserQuit);
+	//message.Add(strNickname);
 
-	// Inform all users that a user is disconnected
-	SendMessageToAllUsers(message);
+	//// Inform all users that a user is disconnected
+	//SendMessageToAllUsers(message);
 
-	UINT unResId = 0;
+	//UINT unResId = 0;
 
-	switch (disconnectionType)
-	{
-	case NDKServer_NormalDisconnection:
-		unResId = IDS_SERVER_CLOSE_USER;	
-		break;
+	//switch (disconnectionType)
+	//{
+	//case NDKServer_NormalDisconnection:
+	//	unResId = IDS_SERVER_CLOSE_USER;	
+	//	break;
 
-	case NDKServer_ClientCloseConnection:	
-		unResId = IDS_USER_QUIT;
-		break;
+	//case NDKServer_ClientCloseConnection:	
+	//	unResId = IDS_USER_QUIT;
+	//	break;
 
-    case NDKServer_ErrorSendingMessage:
-		unResId = IDS_ERROR_SENDING_MESSAGE;	
-		break;
+ //   case NDKServer_ErrorSendingMessage:
+	//	unResId = IDS_ERROR_SENDING_MESSAGE;	
+	//	break;
 
-	case NDKServer_ErrorReceivingMessage:
-		unResId = IDS_ERROR_SENDING_MESSAGE;	
-		break;
+	//case NDKServer_ErrorReceivingMessage:
+	//	unResId = IDS_ERROR_SENDING_MESSAGE;	
+	//	break;
 
-	default:
-		break;
-	}
+	//default:
+	//	break;
+	//}
 
-	CString strUserQuit;
-	strUserQuit.Format(unResId, strNickname);
+	//CString strUserQuit;
+	//strUserQuit.Format(unResId, strNickname);
 
-	AddSystemText(strUserQuit);
-	
-	DeleteUser(lUserId);
+	//AddSystemText(strUserQuit);
+	//
+	//DeleteUser(lUserId);
 }
 
 // Called when the ping from the user is received. The number of
