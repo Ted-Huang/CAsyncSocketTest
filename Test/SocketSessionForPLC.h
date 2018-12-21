@@ -24,7 +24,7 @@ public:
 	~CSocketSessionForPLC();
 
 	void AttachNotify(ISessionNotify *pLink) { m_pINotify = pLink; };
-
+	BOOL SendData(int nSize, BYTE* pData);
 private:
 	void Init();
 
@@ -41,6 +41,5 @@ private:
 	int m_nReceiveSize;
 	BYTE m_cReceiveBuf[MAX_RECEIVE_BUFFER_SIZE];
 	int m_nSendSize;
-	int m_nSendBufferSize;
 	BYTE m_cSendBuf[MAX_SEND_BUFFER_SIZE];
 };
