@@ -164,6 +164,8 @@ enum SYNC_TYPE{
 #define WM_TEST					(WM_APP + 3022)
 void CTestDlg::click()
 {
+	m_pSocketServer->Test();
+	return ;
 	HWND hWnd = ::FindWindow(NULL, _T("AOI Master"));
 	CString str;
 	m_pEdit->GetWindowText(str);

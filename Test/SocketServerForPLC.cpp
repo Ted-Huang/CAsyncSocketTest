@@ -22,6 +22,20 @@ BOOL CSorketServerForPLC::Start()
 	return bFlag;
 }
 
+void CSorketServerForPLC::Test()
+{
+	for (auto pSession : m_vSession){
+		if (pSession){
+			CString str("abc");
+			int ii = 10000;
+			//int nn = pSession->Send(str, _tcslen(str) * sizeof(TCHAR));
+			//int nn = pSession->Send(&ii, sizeof(int));
+			pSession->SendData(0, 0);
+			//TRACE(L"%d \n", nn);
+		}
+	}
+}
+
 void CSorketServerForPLC::Init()
 {
 	if (!AfxSocketInit()){
@@ -52,29 +66,6 @@ void CSorketServerForPLC::OnAccept(int nErrorCode)
 	Accept(*pSession);
 
 	pSession->AttachNotify(this);
-	TRACE("Accept session! \n ");
-}
-
-void CSorketServerForPLC::OnClose(int nErrorCode)
-{
-	CAsyncSocket::OnClose(nErrorCode);
-	Finalize();
-	TRACE("OnClose! \n ");
-}
-
-void CSorketServerForPLC::OnConnect(int nErrorCode)
-{
-	TRACE("OnConnect! \n ");
-}
-
-void CSorketServerForPLC::OnReceive(int nErrorCode)
-{
-	TRACE("OnReceive! \n ");
-}
-
-void CSorketServerForPLC::OnSend(int nErrorCode)
-{
-	TRACE("OnSend! \n ");
 }
 
 void CSorketServerForPLC::OnError(void *pInstance, long ErrorId, long ErrorData)

@@ -14,17 +14,12 @@ public:
 	virtual ~CSorketServerForPLC();
 
 	BOOL Start();
+	void Test();
 private:
 	void Init();
 	void Finalize();
 protected:
 	virtual void OnAccept(int nErrorCode);
-	// no use
-	virtual void OnClose(int nErrorCode);
-	virtual void OnConnect(int nErrorCode);
-	virtual void OnReceive(int nErrorCode);
-	virtual void OnSend(int nErrorCode);
-	// no use
 
 	//ISessionNotify
 	virtual void OnError(void *pInstance, long ErrorId, long ErrorData);

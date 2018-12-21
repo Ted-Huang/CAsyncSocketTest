@@ -27,10 +27,10 @@ public:
 	BOOL SendData(int nSize, BYTE* pData);
 private:
 	void Init();
-
+	void MovePacketToStart(BYTE **ppCurrent, int &DataSize);
+	void CheckDataBuf();
 protected:
 	virtual void OnClose(int nErrorCode);
-	virtual void OnConnect(int nErrorCode);
 	virtual void OnReceive(int nErrorCode);
 	virtual void OnSend(int nErrorCode);
 
