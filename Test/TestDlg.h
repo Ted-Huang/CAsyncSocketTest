@@ -5,7 +5,7 @@
 #pragma once
 
 
-#include "SocketForPLC.h"
+#include "SocketServerForPLC.h"
 // CTestDlg ¹ï¸Ü¤è¶ô
 class CTestDlg : public CDialogEx
 {

@@ -1,8 +1,12 @@
 #pragma once
 
 #include "afxsock.h"
+#include "SocketSessionForPLC.h"
+#include <vector>
 
+using namespace std;
 #define AOI_PLC_PORT	35001
+
 
 class CSorketServerForPLC : public CAsyncSocket{
 public:
@@ -22,4 +26,5 @@ protected:
 
 private:
 	int m_nPort;
+	vector<CSocketSessionForPLC*> m_vSession;
 };

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "SocketForPLC.h"
+#include "SocketServerForPLC.h"
 
 CSorketServerForPLC::CSorketServerForPLC()
 {
@@ -8,7 +8,12 @@ CSorketServerForPLC::CSorketServerForPLC()
 
 CSorketServerForPLC::~CSorketServerForPLC()
 {
-
+	while (m_vSession.size()){
+		if (m_vSession.back()){
+			delete m_vSession.back();
+		}
+		m_vSession.pop_back();
+	}
 }
 
 BOOL CSorketServerForPLC::Start()
@@ -31,7 +36,14 @@ void CSorketServerForPLC::Init()
 }
 void CSorketServerForPLC::OnAccept(int nErrorCode)
 {
+	CAsyncSocket::OnAccept(nErrorCode);
+	if (nErrorCode != NO_ERROR)
+		return;
 
+	CSocketSessionForPLC* pSession = new CSocketSessionForPLC;
+	m_vSession.push_back(pSession);
+	Accept(*pSession);
+	TRACE("\nAccept session!");
 }
 
 void CSorketServerForPLC::OnClose(int nErrorCode)
