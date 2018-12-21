@@ -30,6 +30,18 @@ CTestDlg::~CTestDlg()
 		delete m_pSocketServer;
 		m_pSocketServer = NULL;
 	}
+	if (m_pBtn){
+		delete m_pBtn;
+		m_pBtn = NULL;
+	}
+	if (m_pBtn2){
+		delete m_pBtn2;
+		m_pBtn2 = NULL;
+	}
+	if (m_pEdit){
+		delete m_pEdit;
+		m_pEdit = NULL;
+	}
 }
 
 void CTestDlg::DoDataExchange(CDataExchange* pDX)

@@ -8,12 +8,7 @@ CSorketServerForPLC::CSorketServerForPLC()
 
 CSorketServerForPLC::~CSorketServerForPLC()
 {
-	while (m_vSession.size()){
-		if (m_vSession.back()){
-			delete m_vSession.back();
-		}
-		m_vSession.pop_back();
-	}
+	Finalize();
 }
 
 BOOL CSorketServerForPLC::Start()
@@ -30,10 +25,22 @@ BOOL CSorketServerForPLC::Start()
 void CSorketServerForPLC::Init()
 {
 	if (!AfxSocketInit()){
-		TRACE("\nInit Socket Error!");
+		TRACE("Init Socket Error! \n");
 	}
+
 	m_nPort = AOI_PLC_PORT;
 }
+
+void CSorketServerForPLC::Finalize()
+{
+	while (m_vSession.size()){
+		if (m_vSession.back()){
+			delete m_vSession.back();
+		}
+		m_vSession.pop_back();
+	}
+}
+
 void CSorketServerForPLC::OnAccept(int nErrorCode)
 {
 	CAsyncSocket::OnAccept(nErrorCode);
@@ -43,25 +50,45 @@ void CSorketServerForPLC::OnAccept(int nErrorCode)
 	CSocketSessionForPLC* pSession = new CSocketSessionForPLC;
 	m_vSession.push_back(pSession);
 	Accept(*pSession);
-	TRACE("\nAccept session!");
+
+	pSession->AttachNotify(this);
+	TRACE("Accept session! \n ");
 }
 
 void CSorketServerForPLC::OnClose(int nErrorCode)
 {
-
+	CAsyncSocket::OnClose(nErrorCode);
+	Finalize();
+	TRACE("OnClose! \n ");
 }
 
 void CSorketServerForPLC::OnConnect(int nErrorCode)
 {
-
+	TRACE("OnConnect! \n ");
 }
 
 void CSorketServerForPLC::OnReceive(int nErrorCode)
 {
-
+	TRACE("OnReceive! \n ");
 }
 
 void CSorketServerForPLC::OnSend(int nErrorCode)
 {
+	TRACE("OnSend! \n ");
+}
 
+void CSorketServerForPLC::OnError(void *pInstance, long ErrorId, long ErrorData)
+{
+	if (!pInstance)
+		return;
+
+	auto it = m_vSession.begin();
+	while (it != m_vSession.end()){
+		if (*it && *it == pInstance){
+			delete *it;
+			*it = NULL;
+			m_vSession.erase(it);
+			break;
+		}
+	}
 }
