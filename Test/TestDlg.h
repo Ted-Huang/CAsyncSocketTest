@@ -5,13 +5,14 @@
 #pragma once
 
 
+#include "SocketForPLC.h"
 // CTestDlg 對話方塊
 class CTestDlg : public CDialogEx
 {
 // 建構
 public:
 	CTestDlg(CWnd* pParent = NULL);	// 標準建構函式
-
+	~CTestDlg();
 // 對話方塊資料
 	enum { IDD = IDD_TEST_DIALOG };
 
@@ -35,4 +36,5 @@ private:
 	CButton* m_pBtn;
 	CButton* m_pBtn2;
 	CEdit* m_pEdit;
+	CSorketServerForPLC* m_pSocketServer;
 };

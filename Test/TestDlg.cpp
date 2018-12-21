@@ -21,6 +21,15 @@ CTestDlg::CTestDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CTestDlg::IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	m_pSocketServer = NULL;
+}
+
+CTestDlg::~CTestDlg()
+{
+	if (m_pSocketServer){
+		delete m_pSocketServer;
+		m_pSocketServer = NULL;
+	}
 }
 
 void CTestDlg::DoDataExchange(CDataExchange* pDX)
@@ -81,6 +90,10 @@ BOOL CTestDlg::OnInitDialog()
 
 	m_pEdit = new CEdit;
 	m_pEdit->Create(WS_CHILD | WS_VISIBLE, CRect(0, 40, 40, 80), this, EDIT1);
+	m_pSocketServer = new CSorketServerForPLC;
+	if (!m_pSocketServer->Start()){
+		AfxMessageBox(L"socket start error!!");
+	}
 	return TRUE;  // 傳回 TRUE，除非您對控制項設定焦點
 }
 
