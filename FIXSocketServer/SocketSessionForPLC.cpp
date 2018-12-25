@@ -118,7 +118,7 @@ BOOL CSocketSessionForPLC::HandleCheckSum(int nBodyLength)
 	ParseMsgToMap(CString(cTrailer, ctTrailerSize), &mTrailer);
 	int nCheck = 0;
 	if (mTrailer.GetSize() == 1 && mTrailer.Lookup(CheckSum, strCheckSum)){
-		for (int x = 0; x < m_nReceiveSize - ctTrailerSize + 1; x++){
+		for (int x = 0; x < m_nReceiveSize - ctTrailerSize; x++){
 			nCheck += m_cReceiveBuf[x];
 		}
 		bRtn = (nCheck % 256) == _ttoi(strCheckSum);
@@ -146,8 +146,8 @@ void CSocketSessionForPLC::HandleReceive()
 	if (mHeader.GetSize() == 2 && mHeader.Lookup(BodyLength, strBodyLength) && _ttoi(strBodyLength)> 0){
 		nBodyLength = _ttoi(strBodyLength);
 		
-		//if (!HandleCheckSum(nBodyLength))
-		//	return;
+		if (!HandleCheckSum(nBodyLength))
+			return;
 
 		char *pBody = new char[nBodyLength];
 		memset(pBody, 0, nBodyLength);

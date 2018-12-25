@@ -8,7 +8,7 @@ namespace ChangeIndexSample.FIX
 {
     public abstract class BaseMsg
     {
-        public static Encoding BaseMsgEncoding = Encoding.Unicode;
+        public static Encoding BaseMsgEncoding = Encoding.UTF8;
         public BaseMsg()
         {
             BeginString = "8=AOI|";
@@ -53,7 +53,7 @@ namespace ChangeIndexSample.FIX
                 nCheckSum += MsgByte[x];
             }
 
-            return strMsg + string.Format("|10={0}", nCheckSum % 256);
+            return strMsg + string.Format("|10={0}", (nCheckSum % 256).ToString().PadLeft(3, '0'));
         }
 
         public static string GetHeartBeatMsg()
