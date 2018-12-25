@@ -14,6 +14,7 @@
     <ProjectGuid>{9158C2D5-B93E-4A62-85CB-78FB8EBEE2FF}</ProjectGuid>
     <RootNamespace>Test</RootNamespace>
     <Keyword>MFCProj</Keyword>
+    <ProjectName>FIXSocketServer</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -106,8 +107,8 @@
     <ClInclude Include="SocketSessionForPLC.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="Test.h" />
-    <ClInclude Include="TestDlg.h" />
+    <ClInclude Include="FIXSocketServer.h" />
+    <ClInclude Include="FIXSocketServerDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SocketServerForPLC.cpp" />
@@ -116,17 +117,17 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Test.cpp" />
-    <ClCompile Include="TestDlg.cpp" />
+    <ClCompile Include="FIXSocketServer.cpp" />
+    <ClCompile Include="FIXSocketServerDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Test.rc" />
+    <ResourceCompile Include="FIXSocketServer.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\Test.rc2" />
+    <None Include="res\FIXSocketServer.rc2" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\Test.ico" />
+    <Image Include="res\FIXSocketServer.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

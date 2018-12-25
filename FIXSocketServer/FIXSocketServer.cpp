@@ -3,8 +3,8 @@
 //
 
 #include "stdafx.h"
-#include "Test.h"
-#include "TestDlg.h"
+#include "FIXSocketServer.h"
+#include "FIXSocketServerDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

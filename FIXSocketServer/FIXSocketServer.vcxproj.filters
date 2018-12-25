@@ -18,12 +18,6 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Test.h">
-      <Filter>標頭檔</Filter>
-    </ClInclude>
-    <ClInclude Include="TestDlg.h">
-      <Filter>標頭檔</Filter>
-    </ClInclude>
     <ClInclude Include="stdafx.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
@@ -39,14 +33,14 @@
     <ClInclude Include="SocketServerForPLC.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
+    <ClInclude Include="FIXSocketServer.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="FIXSocketServerDlg.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Test.cpp">
-      <Filter>原始程式檔</Filter>
-    </ClCompile>
-    <ClCompile Include="TestDlg.cpp">
-      <Filter>原始程式檔</Filter>
-    </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>原始程式檔</Filter>
     </ClCompile>
@@ -56,20 +50,26 @@
     <ClCompile Include="SocketSessionForPLC.cpp">
       <Filter>原始程式檔</Filter>
     </ClCompile>
+    <ClCompile Include="FIXSocketServerDlg.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="FIXSocketServer.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Test.rc">
+    <ResourceCompile Include="FIXSocketServer.rc">
       <Filter>資源檔</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\Test.rc2">
-      <Filter>資源檔</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="res\Test.ico">
+    <Image Include="res\FIXSocketServer.ico">
       <Filter>資源檔</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\FIXSocketServer.rc2">
+      <Filter>資源檔</Filter>
+    </None>
   </ItemGroup>
 </Project>
