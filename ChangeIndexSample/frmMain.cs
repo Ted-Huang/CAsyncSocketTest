@@ -28,6 +28,11 @@ namespace ChangeIndexSample
             cbIndexType.Items.Add("Product Index");
             cbIndexType.Items.Add("Defect Index");
             cbIndexType.SelectedIndex = 0;
+
+            Timer objHBTimer = new Timer();
+            objHBTimer.Interval = 3000;
+            objHBTimer.Tick += OnHBTimer;
+            objHBTimer.Start();
         }
 
         private void btnSend_Click(object sender, EventArgs e)
@@ -76,6 +81,23 @@ namespace ChangeIndexSample
                 MessageBox.Show("連線失敗");
             }
             
+        }
+
+        private void OnHBTimer(object sender, EventArgs e)
+        {
+            //send heart beat
+            if (socket == null || !socket.Connected)
+            {
+                return;
+            }
+            try
+            {
+                socket.Send(BaseMsg.BaseMsgEncoding.GetBytes(BaseMsg.GetHeartBeatMsg()));
+            }
+            catch
+            {
+
+            }
         }
     }
 }

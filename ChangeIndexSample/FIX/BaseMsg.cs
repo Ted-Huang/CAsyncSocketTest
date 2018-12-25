@@ -8,10 +8,12 @@ namespace ChangeIndexSample.FIX
 {
     public abstract class BaseMsg
     {
+        public static Encoding BaseMsgEncoding = Encoding.Unicode;
         public BaseMsg()
         {
             BeginString = "8=AOI|";
         }
+
         /// <summary>
         /// BeginString = 8,
         /// </summary>
@@ -42,16 +44,21 @@ namespace ChangeIndexSample.FIX
             sb.Append(string.Format("52={0}|", this.MsgTime));
             sb.Append(string.Format("{0}", ComposeBodyMsg().TrimEnd('|')));
 
-            BodyLength = (Encoding.Unicode.GetBytes(sb.ToString()).Length + 1);
+            BodyLength = (BaseMsgEncoding.GetBytes(sb.ToString()).Length + 1);
 
             string strMsg = string.Format("{0}9={1}|{2}", this.BeginString, BodyLength.ToString().PadLeft(5, '0'), sb.ToString());
-            byte[] MsgByte = Encoding.Unicode.GetBytes(strMsg);
+            byte[] MsgByte = BaseMsgEncoding.GetBytes(strMsg);
             for (int x = 0; x < MsgByte.Length; x++)
             {
                 nCheckSum += MsgByte[x];
             }
 
             return strMsg + string.Format("|10={0}", nCheckSum % 256);
+        }
+
+        public static string GetHeartBeatMsg()
+        {
+            return "8=AOI|9=00005|35=0";
         }
 
         abstract public string ComposeBodyMsg();
