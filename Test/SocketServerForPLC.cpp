@@ -1,9 +1,10 @@
 #include "stdafx.h"
 #include "SocketServerForPLC.h"
 
-CSorketServerForPLC::CSorketServerForPLC()
+CSorketServerForPLC::CSorketServerForPLC(CWnd* pParent)
 {
 	Init();
+	m_pParent = pParent;
 }
 
 CSorketServerForPLC::~CSorketServerForPLC()
@@ -20,20 +21,6 @@ BOOL CSorketServerForPLC::Start()
 		}
 	}
 	return bFlag;
-}
-
-void CSorketServerForPLC::Test()
-{
-	for (auto pSession : m_vSession){
-		if (pSession){
-			CString str("abc");
-			int ii = 10000;
-			//int nn = pSession->Send(str, _tcslen(str) * sizeof(TCHAR));
-			//int nn = pSession->Send(&ii, sizeof(int));
-			pSession->SendData(0, 0);
-			//TRACE(L"%d \n", nn);
-		}
-	}
 }
 
 void CSorketServerForPLC::Init()

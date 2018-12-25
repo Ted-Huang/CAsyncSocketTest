@@ -10,11 +10,10 @@ using namespace std;
 
 class CSorketServerForPLC : public CAsyncSocket, public ISessionNotify{
 public:
-	CSorketServerForPLC();
+	CSorketServerForPLC(CWnd* pParent);
 	virtual ~CSorketServerForPLC();
 
 	BOOL Start();
-	void Test();
 private:
 	void Init();
 	void Finalize();
@@ -26,5 +25,5 @@ protected:
 private:
 	int m_nPort;
 	vector<CSocketSessionForPLC*> m_vSession;
-
+	CWnd* m_pParent;
 };
