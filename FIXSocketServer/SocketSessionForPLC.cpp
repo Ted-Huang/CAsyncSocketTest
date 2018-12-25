@@ -1,6 +1,12 @@
 #include "stdafx.h"
 #include "SocketSessionForPLC.h"
 
+const char ctBeginString[] = "8=AOI|";
+const int ctHeaderSize = 13;
+const int ctTrailerSize = 7;
+const CString ctFieldSplit = L"|";
+const CString ctDataSplit = L"=";
+
 CSocketSessionForPLC::CSocketSessionForPLC()
 {
 	m_pINotify = NULL;
@@ -49,6 +55,7 @@ BOOL CSocketSessionForPLC::SendData(int nSize, BYTE* pData)
 	}
 	return bFlag;
 }
+
 void CSocketSessionForPLC::Init()
 {
 	m_nReceiveSize = 0;
@@ -57,40 +64,140 @@ void CSocketSessionForPLC::Init()
 	memset(m_cSendBuf, 0, sizeof(m_cSendBuf));
 }
 
-void CSocketSessionForPLC::CheckDataBuf()
+void CSocketSessionForPLC::ParseCommand(CMap<int, int, CString, CString>* pMap)
 {
-	BYTE *pStart = m_cReceiveBuf;
-	MovePacketToStart(&pStart, m_nReceiveSize);
-	//AOI_SDK_PACKET_HEADER *pHdr = (AOI_SDK_PACKET_HEADER*)m_cReceiveBuf;
-	//int nCmdPacketSize = sizeof(AOI_SDK_PACKET_HEADER) + pHdr->nSize + 1; //Header+BodySize+CheckSum
-	//while ((m_nReceiveSize >= sizeof(AOI_SDK_PACKET_HEADER)) && (m_nReceiveSize >= nCmdPacketSize)){
-		//ParseCommand((BYTE*)pHdr, nCmdPacketSize);
-		//pHdr = (AOI_SDK_PACKET_HEADER*)((BYTE*)pHdr + nCmdPacketSize);
-		//m_nReceiveSize -= nCmdPacketSize;
-		//nCmdPacketSize = sizeof(AOI_SDK_PACKET_HEADER) + pHdr->nSize + 1;
-	//}
-}
+	CString strMsgType;
+	if (!pMap || !pMap->Lookup(MsgType, strMsgType) || !m_pINotify)
+		return;
 
-void CSocketSessionForPLC::MovePacketToStart(BYTE **ppCurrent, int &DataSize)
-{
-	if (ppCurrent && (*ppCurrent) && DataSize){
-		BYTE *pPtr = *ppCurrent;
-		long nNewSize = DataSize;
-		//while ((*(DWORD*)(pPtr)) != SDK_PACKET_START){
-		//	if (nNewSize <= 0){
-		//		break;
-		//	}
-		//	pPtr++;
-		//	nNewSize--;
-		//}
-		long nOffset = DataSize - nNewSize;
-		if (nOffset >0){
-			//Move Memory & Clear Memory
-			memmove(*ppCurrent, pPtr, nNewSize);
-			memset(*ppCurrent + nNewSize, 0, nOffset);
-			DataSize = nNewSize;
+	if (strMsgType == "C"){
+		CString strIndexType, strIndex;
+		if (pMap->Lookup(IndexType, strIndexType) && pMap->Lookup(Index, strIndex)){
+			m_pINotify->OnPLCChangeIndex(_ttoi(strIndexType), _ttoi(strIndex));
 		}
 	}
+}
+
+void CSocketSessionForPLC::Split(CString str, CString strSplitter, vector<CString>* vResult)
+{
+	int nTokenPos = 0; 
+	CString strToken = str.Tokenize(strSplitter, nTokenPos);
+	while (!strToken.IsEmpty()){
+		vResult->push_back(strToken);
+		strToken = str.Tokenize(strSplitter, nTokenPos);
+	}
+}
+
+void CSocketSessionForPLC::ParseMsgToMap(CString str, CMap<int, int, CString, CString>* pMap)
+{
+	int nFieldTokenPos = 0, nDataTokenPos = 0;
+	vector<CString> vField;
+	Split(str, ctFieldSplit, &vField);
+	
+	for (int x = 0; x < vField.size(); x++){
+		vector<CString> vKeyValue;
+		Split(vField.at(x), ctDataSplit, &vKeyValue);
+
+		if (vKeyValue.size() != 2)
+			continue;
+
+		CString strKey, strValue;
+		pMap->SetAt(_ttoi(vKeyValue.at(0)), vKeyValue.at(1));
+	}
+}
+
+BOOL CSocketSessionForPLC::HandleCheckSum(int nBodyLength)
+{
+	BOOL bRtn = FALSE;
+	char cTrailer[ctTrailerSize];
+	CMap<int, int, CString, CString> mTrailer;
+	CString strCheckSum;
+	//checksum
+	memset(cTrailer, 0, ctTrailerSize);
+	memcpy(cTrailer, m_cReceiveBuf + ctHeaderSize + nBodyLength, ctTrailerSize);
+	ParseMsgToMap(CString(cTrailer, ctTrailerSize), &mTrailer);
+	int nCheck = 0;
+	if (mTrailer.GetSize() == 1 && mTrailer.Lookup(CheckSum, strCheckSum)){
+		for (int x = 0; x < m_nReceiveSize - ctTrailerSize + 1; x++){
+			nCheck += m_cReceiveBuf[x];
+		}
+		bRtn = (nCheck % 256) == _ttoi(strCheckSum);
+	}
+	return bRtn;
+}
+
+
+void CSocketSessionForPLC::HandleReceive()
+{
+	BYTE *pStart = m_cReceiveBuf;
+	//check header
+	if (!MovePacketToStart(&pStart, m_nReceiveSize))
+		return;
+
+
+	//body
+	char cHeader[ctHeaderSize], cTrailer[ctTrailerSize];
+	memset(cHeader, 0, ctHeaderSize);
+	memcpy(cHeader, m_cReceiveBuf, ctHeaderSize);
+	CMap<int, int, CString, CString> mHeader, mBody;
+	ParseMsgToMap(CString(cHeader, ctHeaderSize), &mHeader);
+	CString strBodyLength;
+	int nBodyLength = 0; 
+	if (mHeader.GetSize() == 2 && mHeader.Lookup(BodyLength, strBodyLength) && _ttoi(strBodyLength)> 0){
+		nBodyLength = _ttoi(strBodyLength);
+		
+		//if (!HandleCheckSum(nBodyLength))
+		//	return;
+
+		char *pBody = new char[nBodyLength];
+		memset(pBody, 0, nBodyLength);
+		memcpy(pBody, m_cReceiveBuf + ctHeaderSize, nBodyLength);
+		CString str = CString(pBody, nBodyLength);
+		ParseMsgToMap(str, &mBody);
+
+		ParseCommand(&mBody);
+		m_nReceiveSize -= (ctHeaderSize + nBodyLength + ctTrailerSize);
+
+		delete[] pBody;
+	}
+}
+
+BOOL CSocketSessionForPLC::IsMatch(BYTE *ppCurrent, int nLeftSize)
+{
+	if (_countof(ctBeginString) > nLeftSize)
+		return FALSE;
+	BYTE *pSrc = ppCurrent;
+	BYTE *pDst = (BYTE*)ctBeginString;
+	for (int x = 0; x < _countof(ctBeginString) - 1 /*end of string*/; x++)
+	{
+		if (*pSrc != *pDst)
+		{
+			return FALSE;
+		}
+		pSrc++;
+		pDst++;
+	}
+
+	return TRUE;
+}
+
+BOOL CSocketSessionForPLC::MovePacketToStart(BYTE **ppCurrent, int &DataSize)
+{
+	BOOL bRtn = FALSE;
+	for (int x = 0; x < DataSize; x++){
+		int nNewSize = DataSize - x;
+		bRtn = IsMatch(*ppCurrent + x, nNewSize);
+		if (bRtn){
+			if (x > 0){
+				//Move Memory & Clear Memory
+				memmove(*ppCurrent, *ppCurrent + x, nNewSize);
+				memset(*ppCurrent + nNewSize, 0, x);
+				DataSize = nNewSize;
+			}
+			break;
+		}
+	}
+	return bRtn;
 }
 
 void CSocketSessionForPLC::OnClose(int nErrorCode)
@@ -123,9 +230,11 @@ void CSocketSessionForPLC::OnReceive(int nErrorCode)
 		break;
 	}
 	if (bSuccess){
-		TCHAR* pStr = (TCHAR*)m_cReceiveBuf;
-		TRACE(L"received: %s \n", pStr);
-		//CheckDataBuf();
+		char *pBody = new char[nRead];
+		memset(pBody, 0, nRead);
+		memcpy(pBody, m_cReceiveBuf, nRead);
+		TRACE(L"received: %s \n", CString(pBody, nRead));
+		HandleReceive();
 	}
 	CAsyncSocket::OnReceive(nErrorCode);
 }

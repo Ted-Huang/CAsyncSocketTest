@@ -4,7 +4,7 @@
 CSorketServerForPLC::CSorketServerForPLC(CWnd* pParent)
 {
 	Init();
-	m_pParent = pParent;
+	m_pMainWnd = pParent;
 }
 
 CSorketServerForPLC::~CSorketServerForPLC()
@@ -69,4 +69,13 @@ void CSorketServerForPLC::OnError(void *pInstance, long ErrorId, long ErrorData)
 			break;
 		}
 	}
+}
+#define WM_SOCKET_MSG			(WM_APP+300)
+#define NDK_SYNCIMG					(WM_APP+554)   
+void CSorketServerForPLC::OnPLCChangeIndex(int nType, int nIndex)
+{
+	if (!m_pMainWnd)
+		return;
+	LPARAM lp = MAKELPARAM(nType, nIndex);
+	m_pMainWnd->PostMessage(WM_SOCKET_MSG, NDK_SYNCIMG, lp);
 }

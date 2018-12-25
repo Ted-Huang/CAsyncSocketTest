@@ -102,7 +102,15 @@ BOOL CTestDlg::OnInitDialog()
 
 	m_pEdit = new CEdit;
 	m_pEdit->Create(WS_CHILD | WS_VISIBLE, CRect(0, 40, 40, 80), this, EDIT1);
-	m_pSocketServer = new CSorketServerForPLC(this);
+
+	CWnd* pWnd = this;
+
+	HWND hWnd = ::FindWindow(NULL, _T("AOI Master"));
+	if (hWnd){
+		pWnd = CWnd::FromHandle(hWnd);
+	}
+
+	m_pSocketServer = new CSorketServerForPLC(pWnd); //send aoi hwnd
 	if (!m_pSocketServer->Start()){
 		AfxMessageBox(L"socket start error!!");
 	}

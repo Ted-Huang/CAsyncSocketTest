@@ -57,7 +57,7 @@ namespace ChangeIndexSample
 
             string str = obj.GetMsg();
             Console.WriteLine(str);
-            socket.Send(Encoding.Unicode.GetBytes(str));
+            socket.Send(BaseMsg.BaseMsgEncoding.GetBytes(str));
         }
 
         private void btnConnect_Click(object sender, EventArgs e)

@@ -22,8 +22,9 @@ protected:
 
 	//ISessionNotify
 	virtual void OnError(void *pInstance, long ErrorId, long ErrorData);
+	virtual void OnPLCChangeIndex(int nType, int nIndex);
 private:
 	int m_nPort;
 	vector<CSocketSessionForPLC*> m_vSession;
-	CWnd* m_pParent;
+	CWnd* m_pMainWnd;
 };
