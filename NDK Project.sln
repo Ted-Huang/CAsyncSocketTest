@@ -56,9 +56,9 @@ Global
 		{F86C8123-DAA0-44C4-B1B1-B5F0AD447FA5}.Template|Win32.Build.0 = Template|Win32
 		{D6C14753-EB98-4F5F-BF42-A358317C080B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D6C14753-EB98-4F5F-BF42-A358317C080B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D6C14753-EB98-4F5F-BF42-A358317C080B}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{D6C14753-EB98-4F5F-BF42-A358317C080B}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{D6C14753-EB98-4F5F-BF42-A358317C080B}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{D6C14753-EB98-4F5F-BF42-A358317C080B}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{D6C14753-EB98-4F5F-BF42-A358317C080B}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{D6C14753-EB98-4F5F-BF42-A358317C080B}.Debug|Win32.ActiveCfg = Debug|x86
 		{D6C14753-EB98-4F5F-BF42-A358317C080B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D6C14753-EB98-4F5F-BF42-A358317C080B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D6C14753-EB98-4F5F-BF42-A358317C080B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU

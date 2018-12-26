@@ -8,6 +8,8 @@ using namespace std;
 #define AOI_PLC_PORT	35001
 
 
+
+
 class CSorketServerForPLC : public CAsyncSocket, public ISessionNotify{
 public:
 	CSorketServerForPLC(CWnd* pParent);
@@ -22,7 +24,7 @@ protected:
 
 	//ISessionNotify
 	virtual void OnError(void *pInstance, long ErrorId, long ErrorData);
-	virtual void OnPLCChangeIndex(int nType, int nIndex);
+	virtual void OnDefectIndex(int nType, int nIndex);
 private:
 	int m_nPort;
 	vector<CSocketSessionForPLC*> m_vSession;

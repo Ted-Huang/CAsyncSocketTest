@@ -64,140 +64,151 @@ void CSocketSessionForPLC::Init()
 	memset(m_cSendBuf, 0, sizeof(m_cSendBuf));
 }
 
-void CSocketSessionForPLC::ParseCommand(CMap<int, int, CString, CString>* pMap)
+bool CSocketSessionForPLC::ParseCommand(BYTE *pData, int DataSize)
 {
-	CString strMsgType;
-	if (!pMap || !pMap->Lookup(MsgType, strMsgType) || !m_pINotify)
-		return;
-
-	if (strMsgType == "C"){
-		CString strIndexType, strIndex;
-		if (pMap->Lookup(IndexType, strIndexType) && pMap->Lookup(Index, strIndex)){
-			m_pINotify->OnPLCChangeIndex(_ttoi(strIndexType), _ttoi(strIndex));
-		}
-	}
-}
-
-void CSocketSessionForPLC::Split(CString str, CString strSplitter, vector<CString>* vResult)
-{
-	int nTokenPos = 0; 
-	CString strToken = str.Tokenize(strSplitter, nTokenPos);
-	while (!strToken.IsEmpty()){
-		vResult->push_back(strToken);
-		strToken = str.Tokenize(strSplitter, nTokenPos);
-	}
-}
-
-void CSocketSessionForPLC::ParseMsgToMap(CString str, CMap<int, int, CString, CString>* pMap)
-{
-	int nFieldTokenPos = 0, nDataTokenPos = 0;
-	vector<CString> vField;
-	Split(str, ctFieldSplit, &vField);
-	
-	for (int x = 0; x < vField.size(); x++){
-		vector<CString> vKeyValue;
-		Split(vField.at(x), ctDataSplit, &vKeyValue);
-
-		if (vKeyValue.size() != 2)
-			continue;
-
-		CString strKey, strValue;
-		pMap->SetAt(_ttoi(vKeyValue.at(0)), vKeyValue.at(1));
-	}
-}
-
-BOOL CSocketSessionForPLC::HandleCheckSum(int nBodyLength)
-{
-	BOOL bRtn = FALSE;
-	char cTrailer[ctTrailerSize];
-	CMap<int, int, CString, CString> mTrailer;
-	CString strCheckSum;
-	//checksum
-	memset(cTrailer, 0, ctTrailerSize);
-	memcpy(cTrailer, m_cReceiveBuf + ctHeaderSize + nBodyLength, ctTrailerSize);
-	ParseMsgToMap(CString(cTrailer, ctTrailerSize), &mTrailer);
-	int nCheck = 0;
-	if (mTrailer.GetSize() == 1 && mTrailer.Lookup(CheckSum, strCheckSum)){
-		for (int x = 0; x < m_nReceiveSize - ctTrailerSize; x++){
-			nCheck += m_cReceiveBuf[x];
-		}
-		bRtn = (nCheck % 256) == _ttoi(strCheckSum);
-	}
-	return bRtn;
-}
-
-
-void CSocketSessionForPLC::HandleReceive()
-{
-	BYTE *pStart = m_cReceiveBuf;
-	//check header
-	if (!MovePacketToStart(&pStart, m_nReceiveSize))
-		return;
-
-
-	//body
-	char cHeader[ctHeaderSize], cTrailer[ctTrailerSize];
-	memset(cHeader, 0, ctHeaderSize);
-	memcpy(cHeader, m_cReceiveBuf, ctHeaderSize);
-	CMap<int, int, CString, CString> mHeader, mBody;
-	ParseMsgToMap(CString(cHeader, ctHeaderSize), &mHeader);
-	CString strBodyLength;
-	int nBodyLength = 0; 
-	if (mHeader.GetSize() == 2 && mHeader.Lookup(BodyLength, strBodyLength) && _ttoi(strBodyLength)> 0){
-		nBodyLength = _ttoi(strBodyLength);
-		
-		if (!HandleCheckSum(nBodyLength))
-			return;
-
-		char *pBody = new char[nBodyLength];
-		memset(pBody, 0, nBodyLength);
-		memcpy(pBody, m_cReceiveBuf + ctHeaderSize, nBodyLength);
-		CString str = CString(pBody, nBodyLength);
-		ParseMsgToMap(str, &mBody);
-
-		ParseCommand(&mBody);
-		m_nReceiveSize -= (ctHeaderSize + nBodyLength + ctTrailerSize);
-
-		delete[] pBody;
-	}
-}
-
-BOOL CSocketSessionForPLC::IsMatch(BYTE *ppCurrent, int nLeftSize)
-{
-	if (_countof(ctBeginString) > nLeftSize)
-		return FALSE;
-	BYTE *pSrc = ppCurrent;
-	BYTE *pDst = (BYTE*)ctBeginString;
-	for (int x = 0; x < _countof(ctBeginString) - 1 /*end of string*/; x++)
-	{
-		if (*pSrc != *pDst)
-		{
-			return FALSE;
-		}
-		pSrc++;
-		pDst++;
-	}
-
-	return TRUE;
-}
-
-BOOL CSocketSessionForPLC::MovePacketToStart(BYTE **ppCurrent, int &DataSize)
-{
-	BOOL bRtn = FALSE;
-	for (int x = 0; x < DataSize; x++){
-		int nNewSize = DataSize - x;
-		bRtn = IsMatch(*ppCurrent + x, nNewSize);
-		if (bRtn){
-			if (x > 0){
-				//Move Memory & Clear Memory
-				memmove(*ppCurrent, *ppCurrent + x, nNewSize);
-				memset(*ppCurrent + nNewSize, 0, x);
-				DataSize = nNewSize;
+	bool bFlag = false;
+	if (PacketCheck(pData, DataSize)){
+		AOI_MSG_HEADER *pHdr = (AOI_MSG_HEADER*)pData;
+		int nBodySize = pHdr->nBodySize;
+		BYTE *pBody = (BYTE*)(pHdr + 1);
+		switch (pHdr->cType){
+		case MSG_HEARTBEAT:
+			{
+				AOI_MSG_HEARTBEAT *pHeartBeat = (AOI_MSG_HEARTBEAT*)pBody;
+				if (pHeartBeat->cEcho == TYPE_QUERY){
+					AOI_MSG_HEARTBEAT xHeartBeat;
+					xHeartBeat.cEcho = TYPE_ECHO;
+					SendCommand(MSG_HEARTBEAT, (BYTE*)&xHeartBeat, 1, FALSE);
+				}
+				else if (pHeartBeat->cEcho == TYPE_ECHO){
+				}
 			}
+			break;
+		case MSG_DEFECTINDEX:
+			if (m_pINotify){
+				AOI_MSG_DEFECTINDEX *pDefectIndex = (AOI_MSG_DEFECTINDEX*)pBody;
+				m_pINotify->OnDefectIndex(pDefectIndex->cIndexType, pDefectIndex->nIndex);
+			}
+			break;
+		default:
+			TRACE("Unknown Command Type! \n");
 			break;
 		}
 	}
-	return bRtn;
+	return bFlag;
+}
+
+void CSocketSessionForPLC::CheckDataBuf()
+{
+	BYTE *pStart = m_cReceiveBuf;
+	MovePacketToStart(&pStart, m_nReceiveSize);
+	AOI_MSG_HEADER *pHdr = (AOI_MSG_HEADER*)m_cReceiveBuf;
+	int nCmdPacketSize = sizeof(AOI_MSG_HEADER) + pHdr->nBodySize + 1; //Header+BodySize+CheckSum
+	while ((m_nReceiveSize >= sizeof(AOI_MSG_HEADER)) && (m_nReceiveSize >= nCmdPacketSize)){
+		ParseCommand((BYTE*)pHdr, nCmdPacketSize);
+		pHdr = (AOI_MSG_HEADER*)((BYTE*)pHdr + nCmdPacketSize);
+		m_nReceiveSize -= nCmdPacketSize;
+		nCmdPacketSize = sizeof(AOI_MSG_HEADER) + pHdr->nBodySize + 1;
+	}
+}
+
+bool CSocketSessionForPLC::PacketCheck(BYTE* pData, int DataSize)
+{
+	AOI_MSG_HEADER *pHdr = (AOI_MSG_HEADER*)pData;
+	if (pHdr->dStart == AOI_PACKET_START){
+#if 0
+		if (pHdr->wVer != AOI_PACKET_VER){ //Need Disconnect or Notify Upgrade Library!!
+			return false;
+		}
+#endif //0
+		if (pHdr->wReserved & 1){
+			return true;
+		}
+		return CheckSum(pData, DataSize);
+	}
+	return false;
+}
+
+bool CSocketSessionForPLC::CheckSum(BYTE* pData, int DataSize)
+{
+	BYTE sum = 0;
+	for (int i = 4; i<(DataSize - 1); i++)
+		sum ^= pData[i];
+	if (sum == pData[DataSize - 1])
+		return true;
+	return false;
+}
+
+bool CSocketSessionForPLC::SendCommand(int nType, BYTE *pData, int DataSize, BOOL bWaitResponse)
+{
+	bool bFlag = false;
+	CByteArray cAoiPacket;
+	MakeAoiSdkPacket(cAoiPacket, nType, pData, DataSize, bWaitResponse);
+	BYTE *pSendData = cAoiPacket.GetData();
+	int nSendLength = (int)cAoiPacket.GetSize();
+	int nSend = Send(pSendData, nSendLength);
+
+	if (nSend > 0){
+		if (nSend == nSendLength){
+			bFlag = true;
+		}
+		else{
+			int nKeepSize = nSendLength - nSend;
+			if ((nKeepSize + m_nSendSize) <MAX_SEND_BUFFER_SIZE){
+				memcpy(m_cSendBuf + m_nSendSize, pSendData + nSend, nKeepSize);
+				m_nSendSize += nKeepSize;
+			}
+		}
+	}
+	else{
+		int nError = GetLastError();
+		if (m_pINotify){
+			m_pINotify->OnError(this, ERR_SDK_SOCKET_SEND, nError);
+		}
+	}
+	return bFlag;
+}
+
+void CSocketSessionForPLC::MakeAoiSdkPacket(CByteArray &Packet, BYTE cCmdType, BYTE *pData, long DataSize, BOOL bWaitResponse)
+{
+	int nFullCmdSize = DataSize + sizeof(AOI_MSG_HEADER) + 1; //AOI_MSG_HEADER + CheckSum
+	Packet.SetSize(nFullCmdSize);
+	BYTE *pPtr = Packet.GetData();
+	AOI_MSG_HEADER *pHeader = (AOI_MSG_HEADER*)pPtr;
+	pHeader->dStart = AOI_PACKET_START;
+	pHeader->wVer = AOI_PACKET_VER;
+	pHeader->wReserved = 0;
+
+	pHeader->cType = cCmdType; 
+	pHeader->nBodySize = DataSize;
+	memcpy(pHeader + 1, pData, DataSize); // Command Body
+	BYTE cCheckSum = 0;
+	for (int i = 4; i<(nFullCmdSize - 1); i++){
+		cCheckSum ^= *(pPtr + i);
+	}
+	*(pPtr + nFullCmdSize - 1) = cCheckSum;
+}
+
+void CSocketSessionForPLC::MovePacketToStart(BYTE **ppCurrent, int &DataSize)
+{
+	if (ppCurrent && (*ppCurrent) && DataSize){
+		BYTE *pPtr = *ppCurrent;
+		long nNewSize = DataSize;
+		while ((*(DWORD*)(pPtr)) != AOI_PACKET_START){
+			if (nNewSize <= 0){
+				break;
+			}
+			pPtr++;
+			nNewSize--;
+		}
+		long nOffset = DataSize - nNewSize;
+		if (nOffset >0){
+			//Move Memory & Clear Memory
+			memmove(*ppCurrent, pPtr, nNewSize);
+			memset(*ppCurrent + nNewSize, 0, nOffset);
+			DataSize = nNewSize;
+		}
+	}
 }
 
 void CSocketSessionForPLC::OnClose(int nErrorCode)
@@ -210,6 +221,8 @@ void CSocketSessionForPLC::OnClose(int nErrorCode)
 
 void CSocketSessionForPLC::OnReceive(int nErrorCode)
 {
+	time_t t;
+	
 	int nRead = 0;
 	nRead = Receive(m_cReceiveBuf + m_nReceiveSize, sizeof(m_cReceiveBuf) - m_nReceiveSize);
 	bool bSuccess = true;
@@ -230,11 +243,7 @@ void CSocketSessionForPLC::OnReceive(int nErrorCode)
 		break;
 	}
 	if (bSuccess){
-		char *pBody = new char[nRead];
-		memset(pBody, 0, nRead);
-		memcpy(pBody, m_cReceiveBuf, nRead);
-		TRACE(L"received: %s \n", CString(pBody, nRead));
-		HandleReceive();
+		CheckDataBuf();
 	}
 	CAsyncSocket::OnReceive(nErrorCode);
 }

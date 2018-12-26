@@ -1,14 +1,19 @@
-﻿using ChangeIndexSample.FIX;
+﻿using ChangeIndexSample.Msg;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Net.Sockets;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 
 namespace ChangeIndexSample
 {
@@ -33,6 +38,8 @@ namespace ChangeIndexSample
             objHBTimer.Interval = 3000;
             objHBTimer.Tick += OnHBTimer;
             objHBTimer.Start();
+
+            System.Threading.Tasks.Task.Factory.StartNew(() => Receive());
         }
 
         private void btnSend_Click(object sender, EventArgs e)
@@ -50,14 +57,12 @@ namespace ChangeIndexSample
                 return;
             }
 
-            ChangeDefectIndexMsg obj = new ChangeDefectIndexMsg();
-            obj.MsgType = MsgType.CHANGE_INDEX;
-            obj.IndexType = (IndexType)cbIndexType.SelectedIndex;
-            obj.Index = int.Parse(txtIndex.Text);
+            ChangeDefectIndexMsg objMsg = new ChangeDefectIndexMsg();
 
-            string str = obj.GetMsg();
-            Console.WriteLine(str);
-            socket.Send(BaseMsg.BaseMsgEncoding.GetBytes(str));
+            objMsg.cIndexType = (byte)cbIndexType.SelectedIndex;
+            objMsg.nIndex = int.Parse(txtIndex.Text);
+            List<byte> ls = MsgHelper.GetByte(objMsg);
+            socket.Send(ls.ToArray());
         }
 
         private void btnConnect_Click(object sender, EventArgs e)
@@ -92,11 +97,30 @@ namespace ChangeIndexSample
             }
             try
             {
-                socket.Send(BaseMsg.BaseMsgEncoding.GetBytes(BaseMsg.GetHeartBeatMsg()));
+                HeartBeatMsg objMsg = new HeartBeatMsg();
+
+                objMsg.cEcho = (byte)ECHO_TYPE.TYPE_QUERY;
+
+                List<byte> ls = MsgHelper.GetByte(objMsg);
+                socket.Send(ls.ToArray());
             }
             catch
             {
 
+            }
+        }
+
+        private void Receive()
+        {
+            while(true)
+            {
+                if (socket != null)
+                {
+                    //int nBuffer = 0;
+                    //byte[] buffer = new byte[1024];
+                    //nBuffer = socket.Receive(buffer);
+
+                }
             }
         }
     }

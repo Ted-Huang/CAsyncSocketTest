@@ -72,7 +72,7 @@ void CSorketServerForPLC::OnError(void *pInstance, long ErrorId, long ErrorData)
 }
 #define WM_SOCKET_MSG			(WM_APP+300)
 #define NDK_SYNCIMG					(WM_APP+554)   
-void CSorketServerForPLC::OnPLCChangeIndex(int nType, int nIndex)
+void CSorketServerForPLC::OnDefectIndex(int nType, int nIndex)
 {
 	if (!m_pMainWnd)
 		return;
