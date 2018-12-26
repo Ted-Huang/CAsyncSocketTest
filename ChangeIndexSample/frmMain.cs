@@ -114,13 +114,18 @@ namespace ChangeIndexSample
         {
             while(true)
             {
-                if (socket != null)
-                {
-                    //int nBuffer = 0;
-                    //byte[] buffer = new byte[1024];
-                    //nBuffer = socket.Receive(buffer);
+                if (socket == null)
+                    continue;
+                if( !socket.Connected)
+                    continue;
+                
+                int nBuffer = 0;
+                byte[] buffer = new byte[socket.ReceiveBufferSize];
+                nBuffer = socket.Receive(buffer);
+                if (nBuffer == 0)
+                    continue;
 
-                }
+                
             }
         }
     }
