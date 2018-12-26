@@ -125,7 +125,25 @@ namespace ChangeIndexSample
                 if (nBuffer == 0)
                     continue;
 
-                
+                BaseMsg objMsg = null;
+
+                switch(buffer[8])
+                {
+                    case (int)MsgType.MSG_HEARTBEAT:
+                        objMsg = new HeartBeatMsg();
+                        ((HeartBeatMsg)objMsg).cEcho = buffer[21];
+                        break;
+                    case (int)MsgType.MSG_CHANGEDEFECT:
+                        break;
+                }
+
+                objMsg.dStart = BitConverter.ToUInt32(buffer, 0);
+                objMsg.wVer = BitConverter.ToUInt16(buffer, 4);
+                objMsg.wReserved = BitConverter.ToUInt16(buffer, 6);
+                objMsg.cType = buffer[8];
+                objMsg.nMsgDate = BitConverter.ToUInt16(buffer, 9);
+                objMsg.nMsgTime = BitConverter.ToUInt16(buffer, 13);
+                objMsg.nSize = BitConverter.ToUInt16(buffer, 17);
             }
         }
     }
