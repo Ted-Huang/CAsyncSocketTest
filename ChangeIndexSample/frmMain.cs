@@ -118,33 +118,44 @@ namespace ChangeIndexSample
                     continue;
                 if( !socket.Connected)
                     continue;
-                
-                int nBuffer = 0;
+
+                int nRecBuffer = 0;
                 byte[] buffer = new byte[socket.ReceiveBufferSize];
-                nBuffer = socket.Receive(buffer);
-                if (nBuffer == 0)
+                nRecBuffer = socket.Receive(buffer);
+                if (nRecBuffer == 0)
                     continue;
-
-                BaseMsg objMsg = null;
-
-                switch(buffer[8])
+                try
                 {
-                    case (int)MsgType.MSG_HEARTBEAT:
-                        objMsg = new HeartBeatMsg();
-                        ((HeartBeatMsg)objMsg).cEcho = buffer[21];
-                        break;
-                    case (int)MsgType.MSG_CHANGEDEFECT:
-                        break;
+                    CheckDataBuf(buffer, nRecBuffer);
                 }
-
-                objMsg.dStart = BitConverter.ToUInt32(buffer, 0);
-                objMsg.wVer = BitConverter.ToUInt16(buffer, 4);
-                objMsg.wReserved = BitConverter.ToUInt16(buffer, 6);
-                objMsg.cType = buffer[8];
-                objMsg.nMsgDate = BitConverter.ToUInt16(buffer, 9);
-                objMsg.nMsgTime = BitConverter.ToUInt16(buffer, 13);
-                objMsg.nSize = BitConverter.ToUInt16(buffer, 17);
+                catch(Exception ex)
+                {
+                    Console.WriteLine(string.Format("receive error! {0}", ex.ToString()));
+                }
             }
+        }
+
+        private void CheckDataBuf(byte[] buffer, int nRecBuffer)
+        {
+            BaseMsg objMsg = null;
+
+            switch (buffer[8])
+            {
+                case (int)MsgType.MSG_HEARTBEAT:
+                    objMsg = new HeartBeatMsg();
+                    ((HeartBeatMsg)objMsg).cEcho = buffer[21];
+                    break;
+                case (int)MsgType.MSG_CHANGEDEFECT:
+                    break;
+            }
+
+            objMsg.dStart = BitConverter.ToUInt32(buffer, 0);
+            objMsg.wVer = BitConverter.ToUInt16(buffer, 4);
+            objMsg.wReserved = BitConverter.ToUInt16(buffer, 6);
+            objMsg.cType = buffer[8];
+            objMsg.nMsgDate = BitConverter.ToUInt16(buffer, 9);
+            objMsg.nMsgTime = BitConverter.ToUInt16(buffer, 13);
+            objMsg.nSize = BitConverter.ToUInt16(buffer, 17);
         }
     }
 }

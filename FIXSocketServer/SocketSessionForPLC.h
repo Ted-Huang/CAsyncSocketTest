@@ -59,7 +59,6 @@ public:
 	~CSocketSessionForPLC();
 
 	void AttachNotify(ISessionNotify *pLink) { m_pINotify = pLink; };
-	BOOL SendData(int nSize, BYTE* pData);
 private:
 	void Init();
 	bool ParseCommand(BYTE *pData, int DataSize);

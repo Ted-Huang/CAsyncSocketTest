@@ -1,12 +1,6 @@
 #include "stdafx.h"
 #include "SocketSessionForPLC.h"
 
-const char ctBeginString[] = "8=AOI|";
-const int ctHeaderSize = 13;
-const int ctTrailerSize = 7;
-const CString ctFieldSplit = L"|";
-const CString ctDataSplit = L"=";
-
 CSocketSessionForPLC::CSocketSessionForPLC()
 {
 	m_pINotify = NULL;
@@ -15,45 +9,6 @@ CSocketSessionForPLC::CSocketSessionForPLC()
 CSocketSessionForPLC::~CSocketSessionForPLC()
 {
 
-}
-
-BOOL CSocketSessionForPLC::SendData(int nSize, BYTE* pData)
-{
-	BOOL bFlag = FALSE;
-	CByteArray cAoiPacket;
-
-	CString* str = new CString;
-	for (int x = 0; x < 50; x++){ //test onsend
-		if (x < 25)
-			(*str) += L"a";
-		else
-			(*str) += L"b";
-	}
-	cAoiPacket.SetSize(str->GetLength() * 2);
-	memcpy(cAoiPacket.GetData(), str->GetBuffer(), str->GetLength() * 2);
-	BYTE *pSendData = cAoiPacket.GetData();
-	int nSendLength = (int)cAoiPacket.GetSize();
-	int nSend = Send(pSendData, nSendLength);
-	if (nSend > 0){
-		if (nSend == nSendLength){
-			bFlag = true;
-		}
-		else{
-			int nKeepSize = nSendLength - nSend;
-			if ((nKeepSize + m_nSendSize) < MAX_SEND_BUFFER_SIZE){
-				memcpy(m_cSendBuf + m_nSendSize, pSendData + nSend, nKeepSize);
-				m_nSendSize += nKeepSize;
-				OnSend(0);
-			}
-		}
-	}
-	else{
-		int nError = GetLastError();
-		if (m_pINotify){
-			m_pINotify->OnError(this, ERR_SDK_SOCKET_SEND, nError);
-		}
-	}
-	return bFlag;
 }
 
 void CSocketSessionForPLC::Init()
