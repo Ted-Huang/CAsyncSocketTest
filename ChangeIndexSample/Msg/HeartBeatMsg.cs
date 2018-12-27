@@ -23,7 +23,7 @@ namespace ChangeIndexSample.Msg
             if (buffer.Length < 13)
                 return;
 
-            cType = buffer[13];
+            cEcho = buffer[13];
         }
         public byte cEcho { get; set; }
     }

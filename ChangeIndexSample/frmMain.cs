@@ -222,7 +222,7 @@ namespace ChangeIndexSample
             }
             catch (Exception ex)
             {
-                Console.WriteLine(string.Format("receive error! {0}", ex.ToString()));
+                Console.WriteLine(string.Format("ParseCommand error! {0}", ex.ToString()));
             }
         }
 
