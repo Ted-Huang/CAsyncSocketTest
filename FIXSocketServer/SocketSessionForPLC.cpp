@@ -176,8 +176,6 @@ void CSocketSessionForPLC::OnClose(int nErrorCode)
 
 void CSocketSessionForPLC::OnReceive(int nErrorCode)
 {
-	time_t t;
-	
 	int nRead = 0;
 	nRead = Receive(m_cReceiveBuf + m_nReceiveSize, sizeof(m_cReceiveBuf) - m_nReceiveSize);
 	bool bSuccess = true;

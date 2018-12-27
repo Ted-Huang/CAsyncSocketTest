@@ -25,8 +25,6 @@ struct AOI_MSG_HEADER{
 	WORD	wVer;		// 0x0100 Ver 1.0				//2
 	WORD	wReserved;									//2
 	BYTE	cType;									    //1
-	long	nMsgDate;	//yyyyMMdd						//4
-	long	nMsgTime;	// HHmmssfff					//4
 	long	nBodySize;	// Body Size					//4
 };
 

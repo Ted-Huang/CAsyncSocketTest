@@ -10,7 +10,7 @@ namespace ChangeIndexSample.Msg
     
     public class MsgDef
     {
-        public static uint AOI_PACKET_START = 0x494f41;	//"AOI"
+        public static uint AOI_PACKET_START = 0x494f41;	    //"AOI"
         public static ushort AOI_PACKET_VER = 0x0100;		//ver. 1.0
     }
 
@@ -23,12 +23,23 @@ namespace ChangeIndexSample.Msg
             wVer = MsgDef.AOI_PACKET_VER;
             wReserved = 0;
         }
+
+        public BaseMsg(byte[] buffer)
+        {
+            if (buffer.Length <= 9)
+                return;
+
+            dStart = BitConverter.ToUInt32(buffer, 0);
+            wVer = BitConverter.ToUInt16(buffer, 4);
+            wReserved = BitConverter.ToUInt16(buffer, 6);
+            cType = buffer[8];
+            nBodySize = BitConverter.ToUInt16(buffer, 9);
+        }
+
         public uint dStart { get; set; }             
         public ushort wVer { get; set; }             
         public ushort wReserved { get; set; }        
         public byte cType { get; set; }
-        public int nMsgDate { get; set; }
-        public int nMsgTime { get; set; }
-        public int nSize { get; set; }               
+        public int nBodySize { get; set; }               
     }
 }

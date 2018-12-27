@@ -16,7 +16,14 @@ namespace ChangeIndexSample.Msg
         public HeartBeatMsg()
         {
             cType = (byte)MsgType.MSG_HEARTBEAT;
-            nSize = 1;
+            nBodySize = 1;
+        }
+        public HeartBeatMsg(byte[] buffer): base(buffer)
+        {
+            if (buffer.Length < 13)
+                return;
+
+            cType = buffer[13];
         }
         public byte cEcho { get; set; }
     }

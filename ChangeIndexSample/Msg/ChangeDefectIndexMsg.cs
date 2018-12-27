@@ -12,8 +12,16 @@ namespace ChangeIndexSample.Msg
         public ChangeDefectIndexMsg()
         {
             cType = (byte)MsgType.MSG_CHANGEDEFECT;
-            nSize = 5;
+            nBodySize = 5;
+        }
 
+        public ChangeDefectIndexMsg(byte[] buffer): base(buffer)
+        {
+            if (buffer.Length < 18)
+                return;
+
+            cType = buffer[13];
+            nIndex = BitConverter.ToInt32(buffer, 14);
         }
         public byte cIndexType { get; set; }
         public int nIndex { get; set; }

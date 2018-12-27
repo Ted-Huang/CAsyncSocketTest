@@ -27,11 +27,12 @@ namespace ChangeIndexSample.Msg
             });
 
             byte bCheckSum = 0;
-            ls.GetRange(4, ls.Count - 4 /*calculate checksum without dStart */).ForEach(x => bCheckSum ^= x);
+            ls.GetRange(sizeof(uint), ls.Count - sizeof(uint) /*calculate checksum without dStart */).ForEach(x => bCheckSum ^= x);
 
             ls.Add(bCheckSum);
 
             return ls;
         }
+
     }
 }
