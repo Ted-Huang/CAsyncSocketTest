@@ -33,10 +33,10 @@
     <ClInclude Include="SocketServerForPLC.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
-    <ClInclude Include="FIXSocketServer.h">
+    <ClInclude Include="AOISocketServer.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
-    <ClInclude Include="FIXSocketServerDlg.h">
+    <ClInclude Include="AOISocketServerDlg.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
   </ItemGroup>
@@ -50,25 +50,25 @@
     <ClCompile Include="SocketSessionForPLC.cpp">
       <Filter>原始程式檔</Filter>
     </ClCompile>
-    <ClCompile Include="FIXSocketServerDlg.cpp">
+    <ClCompile Include="AOISocketServer.cpp">
       <Filter>原始程式檔</Filter>
     </ClCompile>
-    <ClCompile Include="FIXSocketServer.cpp">
+    <ClCompile Include="AOISocketServerDlg.cpp">
       <Filter>原始程式檔</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="FIXSocketServer.rc">
+    <ResourceCompile Include="AOISocketServer.rc">
       <Filter>資源檔</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\FIXSocketServer.ico">
+    <Image Include="res\AOISocketServer.ico">
       <Filter>資源檔</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\FIXSocketServer.rc2">
+    <None Include="res\AOISocketServer.rc2">
       <Filter>資源檔</Filter>
     </None>
   </ItemGroup>

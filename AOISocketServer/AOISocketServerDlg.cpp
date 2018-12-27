@@ -3,8 +3,8 @@
 //
 
 #include "stdafx.h"
-#include "FIXSocketServer.h"
-#include "FIXSocketServerDlg.h"
+#include "AOISocketServer.h"
+#include "AOISocketServerDlg.h"
 #include "afxdialogex.h"
 
 #ifdef _DEBUG

@@ -14,7 +14,7 @@
     <ProjectGuid>{9158C2D5-B93E-4A62-85CB-78FB8EBEE2FF}</ProjectGuid>
     <RootNamespace>Test</RootNamespace>
     <Keyword>MFCProj</Keyword>
-    <ProjectName>FIXSocketServer</ProjectName>
+    <ProjectName>AOISocketServer</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -107,8 +107,8 @@
     <ClInclude Include="SocketSessionForPLC.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="FIXSocketServer.h" />
-    <ClInclude Include="FIXSocketServerDlg.h" />
+    <ClInclude Include="AOISocketServer.h" />
+    <ClInclude Include="AOISocketServerDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SocketServerForPLC.cpp" />
@@ -117,17 +117,17 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="FIXSocketServer.cpp" />
-    <ClCompile Include="FIXSocketServerDlg.cpp" />
+    <ClCompile Include="AOISocketServer.cpp" />
+    <ClCompile Include="AOISocketServerDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="FIXSocketServer.rc" />
+    <ResourceCompile Include="AOISocketServer.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\FIXSocketServer.rc2" />
+    <None Include="res\AOISocketServer.rc2" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\FIXSocketServer.ico" />
+    <Image Include="res\AOISocketServer.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -5,7 +5,7 @@ VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChangeIndexSample", "ChangeIndexSample\ChangeIndexSample.csproj", "{D6C14753-EB98-4F5F-BF42-A358317C080B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FIXSocketServer", "FIXSocketServer\FIXSocketServer.vcxproj", "{9158C2D5-B93E-4A62-85CB-78FB8EBEE2FF}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AOISocketServer", "AOISocketServer\AOISocketServer.vcxproj", "{9158C2D5-B93E-4A62-85CB-78FB8EBEE2FF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

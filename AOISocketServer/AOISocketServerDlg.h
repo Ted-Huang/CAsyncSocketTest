@@ -1,5 +1,5 @@
 
-// FIXSocketServerDlg.h : 標頭檔
+// AOISocketServerDlg.h : 標頭檔
 //
 
 #pragma once
