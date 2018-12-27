@@ -39,7 +39,7 @@ namespace ChangeIndexSample
             cbIndexType.SelectedIndex = 0;
 
             Timer objHBTimer = new Timer();
-            objHBTimer.Interval = 3000;
+            objHBTimer.Interval = 1000;
             objHBTimer.Tick += OnHBTimer;
             objHBTimer.Start();
 
@@ -61,34 +61,39 @@ namespace ChangeIndexSample
                 return;
             }
 
-            ChangeDefectIndexMsg objMsg = new ChangeDefectIndexMsg();
+            RequestDefectIndexMsg objMsg = new RequestDefectIndexMsg();
             objMsg.cIndexType = (byte)cbIndexType.SelectedIndex;
             objMsg.nIndex = int.Parse(txtIndex.Text);
             SendMsg(objMsg);
         }
 
-        private void SendMsg(BaseMsg objMsg)
+        private bool SendMsg(BaseMsg objMsg)
         {
-
             if (m_socket == null || !m_socket.Connected)
             {
                 Console.WriteLine("連線異常");
-                return;
+                return false;
             }
 
             try
             {
                 List<byte> ls = MsgHelper.GetByte(objMsg);
                 m_socket.Send(ls.ToArray());
-            
+                return true;
             }
             catch(Exception ex)
             {
-                Console.WriteLine(string.Format("連線異常"), ex.ToString());
+                Console.WriteLine(string.Format("發送失敗"), ex.ToString());
+                return false;
             }
         }
 
         private void btnConnect_Click(object sender, EventArgs e)
+        {
+            Connect();
+        }
+
+        private void Connect()
         {
             if (m_socket != null)
             {
@@ -104,11 +109,10 @@ namespace ChangeIndexSample
                 m_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 m_socket.Connect(txtIP.Text, int.Parse(txtPort.Text));
             }
-            catch 
+            catch
             {
                 MessageBox.Show("連線失敗");
             }
-            
         }
 
         private void OnHBTimer(object sender, EventArgs e)
@@ -116,7 +120,8 @@ namespace ChangeIndexSample
             HeartBeatMsg objMsg = new HeartBeatMsg();
             objMsg.cEcho = (byte)ECHO_TYPE.TYPE_QUERY;
 
-            SendMsg(objMsg);
+            if (!SendMsg(objMsg))
+                Connect();
         }
 
         private void Receive()
@@ -215,8 +220,12 @@ namespace ChangeIndexSample
                             return;
                         }
                         break;
-                    case MsgType.MSG_CHANGEDEFECT:
-                        objMsg = new ChangeDefectIndexMsg(buffer);
+                    case MsgType.MSG_REQUEST_DEFECTINDEX:
+                        objMsg = new RequestDefectIndexMsg(buffer);
+                        break;
+                    case MsgType.MSG_RESPONSE_DEFECTINDEX:
+                        objMsg = new ResponseDefectIndexMsg(buffer);
+                        DoResponseDefectIndex((ResponseDefectIndexMsg)objMsg);
                         break;
                 }
             }
@@ -245,6 +254,28 @@ namespace ChangeIndexSample
                 sum ^= buffer[x];
 
             return sum == buffer[buffer.Length - 1];
+        }
+
+        private void DoResponseDefectIndex(ResponseDefectIndexMsg objMsg)
+        {
+            switch ((RespDefectIndexCode)objMsg.cRtnCode)
+            {
+                case RespDefectIndexCode.Success:
+                    MessageBox.Show("變更成功");
+                    break;
+                case RespDefectIndexCode.ProjectNotReady:
+                    MessageBox.Show("專案尚未就緒");
+                    break;
+                case RespDefectIndexCode.IndexNotExist:
+                    MessageBox.Show("index不存在");
+                    break;
+                case RespDefectIndexCode.InspectionNotRunning:
+                    MessageBox.Show("尚未開始檢測");
+                    break;
+                default:
+                    MessageBox.Show(string.Format("未知錯誤! code:{0}", objMsg.cRtnCode));
+                    break;
+            }
         }
     }
 }

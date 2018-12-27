@@ -64,7 +64,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Msg\ChangeDefectIndexMsg.cs" />
+    <Compile Include="Msg\RequestDefectIndexMsg.cs" />
     <Compile Include="Msg\BaseMsg.cs" />
     <Compile Include="Msg\HeartBeatMsg.cs" />
     <Compile Include="Msg\MsgHelper.cs" />
@@ -75,6 +75,7 @@
     <Compile Include="frmMain.Designer.cs">
       <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="Msg\ResponseDefectIndexMsg.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="frmMain.resx">

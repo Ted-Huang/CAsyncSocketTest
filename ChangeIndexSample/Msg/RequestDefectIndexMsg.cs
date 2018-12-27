@@ -7,20 +7,21 @@ using System.Threading.Tasks;
 namespace ChangeIndexSample.Msg
 {
 
-    public class ChangeDefectIndexMsg : BaseMsg
+    public class RequestDefectIndexMsg : BaseMsg
     {
-        public ChangeDefectIndexMsg()
+        public RequestDefectIndexMsg()
         {
-            cType = (byte)MsgType.MSG_CHANGEDEFECT;
+            cType = (byte)MsgType.MSG_REQUEST_DEFECTINDEX;
             nBodySize = 5;
         }
 
-        public ChangeDefectIndexMsg(byte[] buffer): base(buffer)
+        public RequestDefectIndexMsg(byte[] buffer)
+            : base(buffer)
         {
             if (buffer.Length < 18)
                 return;
 
-            cType = buffer[13];
+            cIndexType = buffer[13];
             nIndex = BitConverter.ToInt32(buffer, 14);
         }
         public byte cIndexType { get; set; }

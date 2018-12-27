@@ -57,8 +57,8 @@ BEGIN_MESSAGE_MAP(CTestDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(BTN1, click)
-	ON_BN_CLICKED(BTN2, click2)
+	//ON_BN_CLICKED(BTN1, click)
+	//ON_BN_CLICKED(BTN2, click2)
 END_MESSAGE_MAP()
 
 
@@ -94,18 +94,18 @@ BOOL CTestDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 設定小圖示
 
 	// TODO:  在此加入額外的初始設定
-	m_pBtn = new CButton;
-	m_pBtn->Create(L"產品", WS_CHILD | WS_VISIBLE, CRect(0, 0, 40, 40), this, BTN1);
+	//m_pBtn = new CButton;
+	//m_pBtn->Create(L"產品", WS_CHILD | WS_VISIBLE, CRect(0, 0, 40, 40), this, BTN1);
 
-	m_pBtn2 = new CButton;
-	m_pBtn2->Create(L"廢品", WS_CHILD | WS_VISIBLE, CRect(40, 0, 80, 40), this, BTN2);
+	//m_pBtn2 = new CButton;
+	//m_pBtn2->Create(L"廢品", WS_CHILD | WS_VISIBLE, CRect(40, 0, 80, 40), this, BTN2);
 
-	m_pEdit = new CEdit;
-	m_pEdit->Create(WS_CHILD | WS_VISIBLE, CRect(0, 40, 40, 80), this, EDIT1);
+	//m_pEdit = new CEdit;
+	//m_pEdit->Create(WS_CHILD | WS_VISIBLE, CRect(0, 40, 40, 80), this, EDIT1);
 
 	CWnd* pWnd = this;
 
-	HWND hWnd = ::FindWindow(NULL, _T("AOI Master"));
+	HWND hWnd = ::FindWindow(NULL, _T("AOITek_MasterWork_Slave"));
 	if (hWnd){
 		pWnd = CWnd::FromHandle(hWnd);
 	}
@@ -163,33 +163,33 @@ HCURSOR CTestDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
-enum SYNC_TYPE{
-	SYNC_PRODUCT_INDEX = 0,
-	SYNC_DEFECT_INDEX,
-};
+//enum SYNC_TYPE{
+//	SYNC_PRODUCT_INDEX = 0,
+//	SYNC_DEFECT_INDEX,
+//};
 
-
-#define WM_TEST					(WM_APP + 3022)
-void CTestDlg::click()
-{
-	HWND hWnd = ::FindWindow(NULL, _T("AOI Master"));
-	CString str;
-	m_pEdit->GetWindowText(str);
-	//LPARAM lParam = MAKELPARAM(PRODUCT, _ttoi(str);
-	//int cidx = LOWORD(lParam);
-	//int iData = HIWORD(lParam);
-	if (hWnd){
-		::SendMessage(hWnd, WM_TEST, 233, MAKELPARAM(SYNC_PRODUCT_INDEX, _ttoi(str)));
-	}
-}
-
-void CTestDlg::click2()
-{
-	
-	HWND hWnd = ::FindWindow(NULL, _T("AOI Master"));
-	CString str;
-	m_pEdit->GetWindowText(str);
-	if (hWnd){
-		::SendMessage(hWnd, WM_TEST, 233, MAKELPARAM(SYNC_DEFECT_INDEX, _ttoi(str)));
-	}
-}
+//
+//#define WM_TEST					(WM_APP + 3022)
+//void CTestDlg::click()
+//{
+//	HWND hWnd = ::FindWindow(NULL, _T("AOI Master"));
+//	CString str;
+//	m_pEdit->GetWindowText(str);
+//	//LPARAM lParam = MAKELPARAM(PRODUCT, _ttoi(str);
+//	//int cidx = LOWORD(lParam);
+//	//int iData = HIWORD(lParam);
+//	if (hWnd){
+//		::SendMessage(hWnd, WM_TEST, 233, MAKELPARAM(SYNC_PRODUCT_INDEX, _ttoi(str)));
+//	}
+//}
+//
+//void CTestDlg::click2()
+//{
+//	
+//	HWND hWnd = ::FindWindow(NULL, _T("AOI Master"));
+//	CString str;
+//	m_pEdit->GetWindowText(str);
+//	if (hWnd){
+//		::SendMessage(hWnd, WM_TEST, 233, MAKELPARAM(SYNC_DEFECT_INDEX, _ttoi(str)));
+//	}
+//}
