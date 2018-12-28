@@ -18,7 +18,41 @@ using System.Xml.Serialization;
 namespace ChangeIndexSample
 {
     public partial class frmMain : Form
-    {        
+    {       
+        class ComboBoxItem
+        {
+            public int  nType { get; set; }
+            public string strDisplay { get; set; }
+
+            public override string ToString()
+            {
+                return strDisplay;
+            }
+        }
+
+        enum DefectIndexType
+        {
+            /// <summary>
+            /// by 產品數量計算index
+            /// </summary>
+            Product,
+            /// <summary>
+            /// by defect數量計算index
+            /// </summary>
+            Defect
+        }
+
+        enum SendMode
+        {
+            /// <summary>
+            /// 保持連線模式
+            /// </summary>
+            KeepAlive,
+            /// <summary>
+            /// 發送訊息後斷線模式
+            /// </summary>
+            DisConnectAfterSendMsg
+        }
         /// <summary>
         /// Socket 通訊端介面
         /// </summary>
@@ -27,6 +61,7 @@ namespace ChangeIndexSample
         const int MAX_RECEIVE_BUFFER_SIZE = 64000;
         byte[] m_buffer = new byte[MAX_RECEIVE_BUFFER_SIZE];
         int m_nReceiveSize = 0;
+        SendMode m_eMode = SendMode.KeepAlive;
 
         public frmMain()
         {
@@ -35,9 +70,15 @@ namespace ChangeIndexSample
 
         private void frmMain_Load(object sender, EventArgs e)
         {
-            cbIndexType.Items.Add("Product Index");
-            cbIndexType.Items.Add("Defect Index");
+
+            cbMode.Items.Add(new ComboBoxItem() { nType = (int)SendMode.KeepAlive, strDisplay = "保持連線模式" });
+            cbMode.Items.Add(new ComboBoxItem() { nType = (int)SendMode.DisConnectAfterSendMsg, strDisplay = "發送訊息後斷線模式" });
+
+            cbIndexType.Items.Add(new ComboBoxItem() { nType = (int)DefectIndexType.Product, strDisplay = "Product Index" });
+            cbIndexType.Items.Add(new ComboBoxItem() { nType = (int)DefectIndexType.Defect, strDisplay = "Defect Index" });
+
             cbIndexType.SelectedIndex = 0;
+            cbMode.SelectedIndex = 0;
 
             m_HBTimer = new Timer();
             m_HBTimer.Interval = 1000;
@@ -56,14 +97,13 @@ namespace ChangeIndexSample
                 return;
             }
 
-            if (m_socket == null || !m_socket.Connected)
+            if (m_eMode == SendMode.DisConnectAfterSendMsg)
             {
-                MessageBox.Show("連線異常");
-                return;
+                Connect();
             }
 
             RequestDefectIndexMsg objMsg = new RequestDefectIndexMsg();
-            objMsg.cIndexType = (byte)cbIndexType.SelectedIndex;
+            objMsg.cIndexType = (byte)((ComboBoxItem)cbIndexType.SelectedItem).nType;
             objMsg.nIndex = int.Parse(txtIndex.Text);
             SendMsg(objMsg);
         }
@@ -89,11 +129,6 @@ namespace ChangeIndexSample
             }
         }
 
-        private void btnConnect_Click(object sender, EventArgs e)
-        {
-            Connect();
-        }
-
         private void Connect()
         {
             if (m_socket != null)
@@ -110,7 +145,10 @@ namespace ChangeIndexSample
             {
                 m_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 m_socket.Connect(txtIP.Text, int.Parse(txtPort.Text));
-                m_HBTimer.Start();
+
+                if (m_eMode == SendMode.KeepAlive)
+                        m_HBTimer.Start();
+
                 AddMessage("連線成功");
             }
             catch(Exception ex)
@@ -289,6 +327,40 @@ namespace ChangeIndexSample
                     AddMessage(string.Format("未知錯誤! code:{0}", objMsg.cRtnCode));
                     break;
             }
+
+            if (m_eMode == SendMode.DisConnectAfterSendMsg)
+            {
+                m_socket.Close();
+                m_socket = null;
+                AddMessage("連線中斷");
+            }
+        }
+
+        private void cbMode_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            m_eMode = (SendMode)((ComboBoxItem)cbMode.SelectedItem).nType;
+            switch (m_eMode)
+            {
+                case SendMode.KeepAlive:
+                    btnConnect.Enabled = true;
+                    break;
+                case SendMode.DisConnectAfterSendMsg:
+                    btnConnect.Enabled = false;
+                    break;
+            }
+            if (m_socket != null && m_socket.Connected)
+            {
+                m_HBTimer.Stop();
+                m_socket.Close();
+            }
+
+            m_socket = null;
+
+        }
+
+        private void btnConnect_Click(object sender, EventArgs e)
+        {
+            Connect();
         }
     }
 }
