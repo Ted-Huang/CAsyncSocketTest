@@ -5,7 +5,7 @@
 #include <vector>
 
 using namespace std;
-#define AOI_PLC_PORT	35001
+#define AOI_PLC_PORT	35010
 
 
 

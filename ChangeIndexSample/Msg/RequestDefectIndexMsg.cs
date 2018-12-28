@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,7 +19,7 @@ namespace ChangeIndexSample.Msg
         public RequestDefectIndexMsg(byte[] buffer)
             : base(buffer)
         {
-            if (buffer.Length < 18)
+            if (buffer.Length < Marshal.SizeOf(typeof(RequestDefectIndexMsg)))
                 return;
 
             cIndexType = buffer[13];

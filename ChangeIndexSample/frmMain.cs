@@ -23,6 +23,7 @@ namespace ChangeIndexSample
         /// Socket 通訊端介面
         /// </summary>
         Socket m_socket = null;
+        Timer m_HBTimer = null;
         const int MAX_RECEIVE_BUFFER_SIZE = 64000;
         byte[] m_buffer = new byte[MAX_RECEIVE_BUFFER_SIZE];
         int m_nReceiveSize = 0;
@@ -38,10 +39,10 @@ namespace ChangeIndexSample
             cbIndexType.Items.Add("Defect Index");
             cbIndexType.SelectedIndex = 0;
 
-            Timer objHBTimer = new Timer();
-            objHBTimer.Interval = 1000;
-            objHBTimer.Tick += OnHBTimer;
-            objHBTimer.Start();
+            m_HBTimer = new Timer();
+            m_HBTimer.Interval = 1000;
+            m_HBTimer.Tick += OnHBTimer;
+
 
             System.Threading.Tasks.Task.Factory.StartNew(() => Receive());
         }
@@ -71,7 +72,7 @@ namespace ChangeIndexSample
         {
             if (m_socket == null || !m_socket.Connected)
             {
-                Console.WriteLine("連線異常");
+                AddMessage("連線異常");
                 return false;
             }
 
@@ -83,7 +84,7 @@ namespace ChangeIndexSample
             }
             catch(Exception ex)
             {
-                Console.WriteLine(string.Format("發送失敗"), ex.ToString());
+                AddMessage(string.Format("發送失敗 : {0}", ex.ToString()));
                 return false;
             }
         }
@@ -101,6 +102,7 @@ namespace ChangeIndexSample
                 {
                     m_socket.Dispose();
                     m_socket = null;
+                    m_HBTimer.Stop();
                 }
                 catch { }
             }
@@ -108,11 +110,22 @@ namespace ChangeIndexSample
             {
                 m_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 m_socket.Connect(txtIP.Text, int.Parse(txtPort.Text));
+                m_HBTimer.Start();
+                AddMessage("連線成功");
             }
-            catch
+            catch(Exception ex)
             {
-                MessageBox.Show("連線失敗");
+                AddMessage(string.Format("連線失敗: {0}", ex.ToString()));
             }
+        }
+
+        private void AddMessage(string strMsg)
+        {
+            Invoke((Action)(() =>
+            {
+                int nIndex = lsMessage.Items.Add(strMsg);
+                lsMessage.SelectedIndex = nIndex;
+            }));
         }
 
         private void OnHBTimer(object sender, EventArgs e)
@@ -142,7 +155,7 @@ namespace ChangeIndexSample
                 }
                 catch(Exception ex)
                 {
-                    Console.WriteLine(string.Format("receive error! {0}", ex.ToString()));
+                    AddMessage(string.Format("receive error! {0}", ex.ToString()));
                 }
 
                 if (nRecBuffer == 0)
@@ -231,7 +244,7 @@ namespace ChangeIndexSample
             }
             catch (Exception ex)
             {
-                Console.WriteLine(string.Format("ParseCommand error! {0}", ex.ToString()));
+                AddMessage(string.Format("ParseCommand error! {0}", ex.ToString()));
             }
         }
 
@@ -261,19 +274,19 @@ namespace ChangeIndexSample
             switch ((RespDefectIndexCode)objMsg.cRtnCode)
             {
                 case RespDefectIndexCode.Success:
-                    MessageBox.Show("變更成功");
+                    AddMessage("變更成功");
                     break;
                 case RespDefectIndexCode.ProjectNotReady:
-                    MessageBox.Show("專案尚未就緒");
+                    AddMessage("專案尚未就緒");
                     break;
                 case RespDefectIndexCode.IndexNotExist:
-                    MessageBox.Show("index不存在");
+                    AddMessage("index不存在");
                     break;
                 case RespDefectIndexCode.InspectionNotRunning:
-                    MessageBox.Show("尚未開始檢測");
+                    AddMessage("尚未開始檢測");
                     break;
                 default:
-                    MessageBox.Show(string.Format("未知錯誤! code:{0}", objMsg.cRtnCode));
+                    AddMessage(string.Format("未知錯誤! code:{0}", objMsg.cRtnCode));
                     break;
             }
         }

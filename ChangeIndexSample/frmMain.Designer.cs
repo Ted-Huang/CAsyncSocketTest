@@ -34,6 +34,7 @@
             this.txtIP = new System.Windows.Forms.TextBox();
             this.txtPort = new System.Windows.Forms.TextBox();
             this.btnConnect = new System.Windows.Forms.Button();
+            this.lsMessage = new System.Windows.Forms.ListBox();
             this.SuspendLayout();
             // 
             // btnSend
@@ -77,7 +78,7 @@
             this.txtPort.Name = "txtPort";
             this.txtPort.Size = new System.Drawing.Size(100, 22);
             this.txtPort.TabIndex = 4;
-            this.txtPort.Text = "35001";
+            this.txtPort.Text = "35010";
             // 
             // btnConnect
             // 
@@ -89,11 +90,22 @@
             this.btnConnect.UseVisualStyleBackColor = true;
             this.btnConnect.Click += new System.EventHandler(this.btnConnect_Click);
             // 
+            // lsMessage
+            // 
+            this.lsMessage.FormattingEnabled = true;
+            this.lsMessage.HorizontalScrollbar = true;
+            this.lsMessage.ItemHeight = 12;
+            this.lsMessage.Location = new System.Drawing.Point(200, 132);
+            this.lsMessage.Name = "lsMessage";
+            this.lsMessage.Size = new System.Drawing.Size(157, 112);
+            this.lsMessage.TabIndex = 6;
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(378, 262);
+            this.Controls.Add(this.lsMessage);
             this.Controls.Add(this.btnConnect);
             this.Controls.Add(this.txtPort);
             this.Controls.Add(this.txtIP);
@@ -116,6 +128,7 @@
         private System.Windows.Forms.TextBox txtIP;
         private System.Windows.Forms.TextBox txtPort;
         private System.Windows.Forms.Button btnConnect;
+        private System.Windows.Forms.ListBox lsMessage;
     }
 }
 

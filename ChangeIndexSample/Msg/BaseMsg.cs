@@ -26,7 +26,7 @@ namespace ChangeIndexSample.Msg
 
         public BaseMsg(byte[] buffer)
         {
-            if (buffer.Length <= 9)
+            if (buffer.Length <= Marshal.SizeOf(typeof(BaseMsg)))
                 return;
 
             dStart = BitConverter.ToUInt32(buffer, 0);

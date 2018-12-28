@@ -3,7 +3,7 @@
 
 CSocketSessionForPLC::CSocketSessionForPLC()
 {
-	m_pINotify = NULL;
+	Init();
 }
 
 CSocketSessionForPLC::~CSocketSessionForPLC()
@@ -13,6 +13,7 @@ CSocketSessionForPLC::~CSocketSessionForPLC()
 
 void CSocketSessionForPLC::Init()
 {
+	m_pINotify = NULL;
 	m_nReceiveSize = 0;
 	m_nSendSize = 0;
 	memset(m_cReceiveBuf, 0, sizeof(m_cReceiveBuf));
