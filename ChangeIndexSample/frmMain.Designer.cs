@@ -158,7 +158,7 @@
             this.Controls.Add(this.txtIndex);
             this.Controls.Add(this.btnSend);
             this.Name = "frmMain";
-            this.Text = "Form1";
+            this.Text = "Sample";
             this.Load += new System.EventHandler(this.frmMain_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
