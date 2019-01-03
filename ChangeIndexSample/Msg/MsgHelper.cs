@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace ChangeIndexSample.Msg
 {
@@ -15,15 +14,15 @@ namespace ChangeIndexSample.Msg
             objMsg.GetType().GetProperties().OrderBy(x => x.DeclaringType.FullName == typeof(BaseMsg).FullName ? 0 : 1 /*base資料在前*/).ToList().ForEach(x =>
             {
                 if (x.PropertyType.FullName == typeof(uint).FullName)
-                    ls.AddRange(BitConverter.GetBytes((uint)x.GetValue(objMsg)));
+                    ls.AddRange(BitConverter.GetBytes((uint)x.GetValue(objMsg, null)));
                 else if (x.PropertyType.FullName == typeof(ushort).FullName)
-                    ls.AddRange(BitConverter.GetBytes((ushort)x.GetValue(objMsg)));
+                    ls.AddRange(BitConverter.GetBytes((ushort)x.GetValue(objMsg, null)));
                 else if (x.PropertyType.FullName == typeof(int).FullName)
-                    ls.AddRange(BitConverter.GetBytes((int)x.GetValue(objMsg)));
+                    ls.AddRange(BitConverter.GetBytes((int)x.GetValue(objMsg, null)));
                 else if (x.PropertyType.FullName == typeof(char).FullName)
-                    ls.Add(Convert.ToByte((char)x.GetValue(objMsg)));
+                    ls.Add(Convert.ToByte((char)x.GetValue(objMsg, null)));
                 else if (x.PropertyType.FullName == typeof(byte).FullName)
-                    ls.Add((byte)x.GetValue(objMsg));
+                    ls.Add((byte)x.GetValue(objMsg, null));
             });
 
             byte bCheckSum = 0;

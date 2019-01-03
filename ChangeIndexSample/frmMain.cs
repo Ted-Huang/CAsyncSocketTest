@@ -11,7 +11,6 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 
@@ -57,12 +56,17 @@ namespace ChangeIndexSample
         /// Socket 通訊端介面
         /// </summary>
         Socket m_socket = null;
+        bool m_bConnect = false;
         Timer m_HBTimer = null;
         const int MAX_RECEIVE_BUFFER_SIZE = 64000;
         byte[] m_buffer = new byte[MAX_RECEIVE_BUFFER_SIZE];
         int m_nReceiveSize = 0;
         SendMode m_eMode = SendMode.KeepAlive;
-
+        /// <summary>
+        /// 連線用同步Flag物件
+        /// </summary>
+        private object lockRef = new object();
+        
         public frmMain()
         {
             InitializeComponent();
@@ -84,8 +88,8 @@ namespace ChangeIndexSample
             m_HBTimer.Interval = 1000;
             m_HBTimer.Tick += OnHBTimer;
 
-
-            System.Threading.Tasks.Task.Factory.StartNew(() => Receive());
+            System.Threading.Thread tReceive = new System.Threading.Thread(Receive);
+            tReceive.Start();
         }
 
         private void btnSend_Click(object sender, EventArgs e)
@@ -131,21 +135,23 @@ namespace ChangeIndexSample
 
         private void Connect()
         {
-            if (m_socket != null)
+            lock (lockRef)
             {
-                try
+                if (m_socket != null)
                 {
-                    m_socket.Dispose();
-                    m_socket = null;
-                    m_HBTimer.Stop();
+                    try
+                    {
+                        m_socket = null;
+                    }
+                    catch { }
                 }
-                catch { }
+                m_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             }
             try
             {
-                m_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                
                 m_socket.Connect(txtIP.Text, int.Parse(txtPort.Text));
-
+                m_bConnect = true;
                 if (m_eMode == SendMode.KeepAlive)
                         m_HBTimer.Start();
 
@@ -154,6 +160,8 @@ namespace ChangeIndexSample
             catch(Exception ex)
             {
                 AddMessage(string.Format("連線失敗: {0}", ex.ToString()));
+                m_socket = null;
+                m_bConnect = false;
             }
         }
 
@@ -179,27 +187,34 @@ namespace ChangeIndexSample
         {
             while(true)
             {
-                if (m_socket == null)
-                    continue;
-                if (!m_socket.Connected)
-                    continue;
-
                 int nRecBuffer = 0;
 
-                try
+                lock (lockRef)
                 {
-                    nRecBuffer = m_socket.Receive(m_buffer, m_nReceiveSize, m_buffer.Length - m_nReceiveSize, SocketFlags.None);
-                    m_nReceiveSize += nRecBuffer;
-                }
-                catch(Exception ex)
-                {
-                    AddMessage(string.Format("receive error! {0}", ex.ToString()));
+                    if (!m_bConnect)
+                        continue;
+                    if (m_socket == null)
+                        continue;
+                    if (!m_socket.Connected)
+                        continue;
+                    
+                    try
+                    {
+                        nRecBuffer = m_socket.Receive(m_buffer, m_nReceiveSize, m_buffer.Length - m_nReceiveSize, SocketFlags.None);
+                        m_nReceiveSize += nRecBuffer;
+                    }
+                    catch (Exception ex)
+                    {
+                        AddMessage(string.Format("receive error! {0}", ex.ToString()));
+                    }
                 }
 
                 if (nRecBuffer == 0)
                     continue;
                 
                 CheckDataBuf();
+
+                System.Threading.Thread.Sleep(1);
             }
         }
 
